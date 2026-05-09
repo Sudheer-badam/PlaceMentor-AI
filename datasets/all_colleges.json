@@ -2772,6 +2772,12 @@
     "university": "Raichur University, Raichur"
   },
   {
+    "name": "AMITY UNIVERSITY",
+    "district": "NOIDA",
+    "state": "Uttar Pradesh",
+    "university": "Amity University"
+  },
+  {
     "name": "AMJAD ALI KHAN COLLEGE OF BUSINESS ADMINISTRATION",
     "district": "HYDERABAD",
     "state": "Telangana",
@@ -7008,6 +7014,12 @@
     "university": "Maulana Abul Kalam Azad University of Technology, West Bengal"
   },
   {
+    "name": "BENNETT UNIVERSITY",
+    "district": "GREATER NOIDA",
+    "state": "Uttar Pradesh",
+    "university": "Bennett University"
+  },
+  {
     "name": "BERHAMPORE POLYTECHNIC COLLEGE",
     "district": "MURSHIDABAD",
     "state": "West Bengal",
@@ -8506,6 +8518,12 @@
     "district": "CHITRADURGA",
     "state": "Karnataka",
     "university": "Davangere University"
+  },
+  {
+    "name": "BITS PILANI (BIRLA INSTITUTE OF TECHNOLOGY AND SCIENCE)",
+    "district": "JHUNJHUNU",
+    "state": "Rajasthan",
+    "university": "BITS Pilani"
   },
   {
     "name": "BITT POLYTECHNIC",
@@ -10254,6 +10272,12 @@
     "university": "Punjab Technical University, Jalandhar"
   },
   {
+    "name": "CHANDIGARH UNIVERSITY",
+    "district": "MOHALI",
+    "state": "Punjab",
+    "university": "Chandigarh University"
+  },
+  {
     "name": "CHANDIL POLYTECHNIC (ESTD. BY GOVT. OF JHARKHAND & RUN BY GURUNANAK POLYTECHNIC  FOUNDATION UNDER PPP)",
     "district": "SAREIKELA AND KHARSAWAN",
     "state": "Jharkhand",
@@ -10888,6 +10912,12 @@
     "district": "COIMBATORE",
     "state": "Tamil Nadu",
     "university": "Directorate of Technical Education"
+  },
+  {
+    "name": "CHRIST UNIVERSITY",
+    "district": "BANGALORE",
+    "state": "Karnataka",
+    "university": "Christ University"
   },
   {
     "name": "CHRISTHURAJ INSTITUTE OF MANAGEMENT",
@@ -37158,6 +37188,12 @@
     "university": "Kerala University, Thiruvananthapuram"
   },
   {
+    "name": "LOVELY PROFESSIONAL UNIVERSITY (LPU)",
+    "district": "PHAGWARA",
+    "state": "Punjab",
+    "university": "Lovely Professional University"
+  },
+  {
     "name": "LOWRY ADVENTIST COLLEGE",
     "district": "BANGALORE URBAN",
     "state": "Karnataka",
@@ -39832,6 +39868,12 @@
     "district": "UDUPI",
     "state": "Karnataka",
     "university": "NOT APPLICABLE"
+  },
+  {
+    "name": "MANIPAL INSTITUTE OF TECHNOLOGY (MIT)",
+    "district": "UDUPI",
+    "state": "Karnataka",
+    "university": "Manipal Academy of Higher Education"
   },
   {
     "name": "MANIPAL UNIVERSITY JAIPUR",
@@ -51547,9 +51589,9 @@
   },
   {
     "name": "REVA UNIVERSITY",
-    "district": "BANGALORE URBAN",
+    "district": "BANGALORE",
     "state": "Karnataka",
-    "university": "NOT APPLICABLE"
+    "university": "REVA University"
   },
   {
     "name": "REVNATH CHOURE COLLEGE",
@@ -57262,6 +57304,12 @@
     "district": "GAUTAM BUDDHA NAGAR",
     "state": "Uttar Pradesh",
     "university": "SELF"
+  },
+  {
+    "name": "SHIV NADAR UNIVERSITY",
+    "district": "DADRI",
+    "state": "Uttar Pradesh",
+    "university": "Shiv Nadar University"
   },
   {
     "name": "SHIV SHANKAR INSTITUTE OF ENGINEERING AND TECHNOLOGY",
@@ -64515,7 +64563,7 @@
     "name": "SRM INSTITUTE OF SCIENCE AND TECHNOLOGY",
     "district": "KANCHIPURAM",
     "state": "Tamil Nadu",
-    "university": "NOT APPLICABLE"
+    "university": "SRM University"
   },
   {
     "name": "SRM INSTITUTE OF SCIENCE AND TECHNOLOGY  TIRUCHIRAPPALLI",
@@ -68296,6 +68344,12 @@
     "district": "PERAMBALUR",
     "state": "Tamil Nadu",
     "university": "Directorate of Technical Education, Chennai"
+  },
+  {
+    "name": "THAPAR INSTITUTE OF ENGINEERING AND TECHNOLOGY",
+    "district": "PATIALA",
+    "state": "Punjab",
+    "university": "Thapar University"
   },
   {
     "name": "THAPAR INSTITUTE OF ENGINEERING AND TECHNOLOGY DEEMED TO BE UNIVERSITY",
@@ -72736,6 +72790,12 @@
     "district": "CHITTOOR",
     "state": "Andhra Pradesh",
     "university": "Jawaharlal Nehru Technological University, Anantapur"
+  },
+  {
+    "name": "VIT UNIVERSITY (VELLORE INSTITUTE OF TECHNOLOGY)",
+    "district": "VELLORE",
+    "state": "Tamil Nadu",
+    "university": "VIT University"
   },
   {
     "name": "VITS ENGINEERING COLLEGE",
