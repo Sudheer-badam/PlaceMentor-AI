@@ -1046,7 +1046,6 @@ def show_dashboard():
             "Practice basic HR questions like 'Tell me about yourself' until you sound confident.",
             "Focus on Data Structures and Algorithms; they are the foundation of technical rounds."
         ]
-        import random
         st.info(f"💡 Tip: {random.choice(tips)}")
         
         # --- CERTIFICATE SECTION ---
