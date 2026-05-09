@@ -39,8 +39,27 @@ st.set_page_config(
     initial_sidebar_state="expanded"
 )
 
-# Load Fonts and CSS
-# Load Fonts and CSS
+# Cached Asset Loader
+@st.cache_data
+def get_base64_image(image_path):
+    try:
+        if os.path.exists(image_path):
+            with open(image_path, "rb") as f:
+                return base64.b64encode(f.read()).decode()
+    except Exception as e:
+        return ""
+    return ""
+
+@st.cache_data
+def get_css_content(css_path):
+    try:
+        if os.path.exists(css_path):
+            with open(css_path) as f:
+                return f.read()
+    except:
+        return ""
+    return ""
+
 def load_css():
     st.markdown("""
         <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -48,35 +67,26 @@ def load_css():
         <link href="https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;800;900&family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
     """, unsafe_allow_html=True)
     
-    # Use absolute paths for assets
     base_path = os.path.dirname(os.path.abspath(__file__))
     bg_path = os.path.join(base_path, "assets", "futuristic_bg.png")
     style_path = os.path.join(base_path, "assets", "style.css")
 
-    try:
-        if os.path.exists(bg_path):
-            with open(bg_path, "rb") as f:
-                bg_data = base64.b64encode(f.read()).decode()
-            bg_css = f"""
-            <style>
-            .stApp {{
-                background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("data:image/png;base64,{bg_data}");
-                background-size: cover;
-                background-position: center;
-                background-attachment: fixed;
-            }}
-            </style>
-            """
-            st.markdown(bg_css, unsafe_allow_html=True)
-    except Exception as e:
-        st.warning(f"Background asset error: {e}")
+    bg_data = get_base64_image(bg_path)
+    if bg_data:
+        st.markdown(f"""
+        <style>
+        .stApp {{
+            background: linear-gradient(rgba(0, 0, 0, 0.75), rgba(0, 0, 0, 0.75)), url("data:image/png;base64,{bg_data}");
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+        }}
+        </style>
+        """, unsafe_allow_html=True)
 
-    try:
-        if os.path.exists(style_path):
-            with open(style_path) as f:
-                st.markdown(f"<style>{f.read()}</style>", unsafe_allow_html=True)
-    except Exception as e:
-        st.error(f"Style asset error: {e}")
+    style_content = get_css_content(style_path)
+    if style_content:
+        st.markdown(f"<style>{style_content}</style>", unsafe_allow_html=True)
 
 load_css()
 
@@ -170,7 +180,9 @@ def generate_certificate(name, university, score, date):
 # Initialize Database and Models
 if 'db_initialized' not in st.session_state:
     init_db()
-    train_model()
+    # Only train if model doesn't exist to speed up startup
+    if not os.path.exists("models/placement_model.pkl"):
+        train_model()
     st.session_state.db_initialized = True
 
 def generate_captcha():
@@ -250,24 +262,9 @@ def auth_page():
         try:
             # Use absolute paths for images
             base_path = os.path.dirname(os.path.abspath(__file__))
-            mentor_path = os.path.join(base_path, "assets", "ai_mentor.png")
-            dev_path = os.path.join(base_path, "assets", "dev_photo.png")
-            logo_path = os.path.join(base_path, "assets", "kl_logo.png")
-
-            mentor_data = ""
-            if os.path.exists(mentor_path):
-                with open(mentor_path, "rb") as f:
-                    mentor_data = base64.b64encode(f.read()).decode()
-            
-            dev_data = ""
-            if os.path.exists(dev_path):
-                with open(dev_path, "rb") as f:
-                    dev_data = base64.b64encode(f.read()).decode()
-            
-            logo_data = ""
-            if os.path.exists(logo_path):
-                with open(logo_path, "rb") as f:
-                    logo_data = base64.b64encode(f.read()).decode()
+            mentor_data = get_base64_image(os.path.join(base_path, "assets", "ai_mentor.png"))
+            dev_data = get_base64_image(os.path.join(base_path, "assets", "dev_photo.png"))
+            logo_data = get_base64_image(os.path.join(base_path, "assets", "kl_logo.png"))
 
             st.markdown(f"""
 <div style='text-align: center; margin-top: 10px;'>
@@ -800,10 +797,10 @@ def show_dashboard():
     st.markdown('<div class="animate-fade-in">', unsafe_allow_html=True)
     
     # KL University Branding Header
-    st.markdown("""
+    st.markdown(f"""
         <div style='background-color: #ffffff; padding: 15px; border-radius: 15px; border-left: 5px solid #6c5ce7; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;'>
             <div style='display: flex; align-items: center; gap: 20px;'>
-                <img src='data:image/png;base64,{logo_base64}' style='height: 60px;'>
+                <img src='data:image/png;base64,{get_base64_image("assets/kl_logo.png")}' style='height: 60px;'>
                 <div>
                     <h4 style='margin: 0; color: #2d3436;'>KL UNIVERSITY 🏛️</h4>
                     <p style='margin: 0; color: #636e72; font-size: 0.9em;'>Official Career Excellence Portal</p>
@@ -813,7 +810,7 @@ def show_dashboard():
                 <p id='dash-live-clock' style='color: #6c5ce7; font-family: "Courier New"; font-weight: bold; font-size: 0.85em; margin: 0; background: rgba(108, 92, 231, 0.1); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.3);'>⏱️ SYS TIME: INITIATING CLOCK...</p>
             </div>
         </div>
-    """.format(logo_base64=base64.b64encode(open("assets/kl_logo.png", "rb").read()).decode()), unsafe_allow_html=True)
+    """, unsafe_allow_html=True)
     
     import streamlit.components.v1 as components
     components.html("""
