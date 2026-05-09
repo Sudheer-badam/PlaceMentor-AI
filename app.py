@@ -408,19 +408,43 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                             st.error("ACCESS DENIED: INVALID QUANTUM IDENTITY.")
 
             st.markdown("---")
-            with st.expander("RECOVER ACCESS?"):
-                f_user = st.text_input("IDENTIFIER", key="forgot_user")
+            with st.expander("🔑 LOST ACCESS? INITIATE RECOVERY"):
+                st.markdown("""
+                <div style='background: rgba(255, 255, 255, 0.05); padding: 15px; border-radius: 10px; border-left: 3px solid #ff7675;'>
+                    <p style='font-size: 0.8em; color: #ff7675; margin: 0;'><b>NEURAL RECOVERY PROTOCOL</b></p>
+                    <p style='font-size: 0.7em; color: rgba(255,255,255,0.6); margin: 0;'>Provide your identifier to initiate security challenge.</p>
+                </div>
+                """, unsafe_allow_html=True)
+                
+                f_user = st.text_input("QUANTUM IDENTIFIER (USERNAME/EMAIL)", key="forgot_user")
                 if f_user:
                     q = get_security_question(f_user)
                     if q:
-                        st.info(f"SECURITY PROTOCOL: {q}")
-                        f_answer = st.text_input("KEY ANSWER", key="forgot_answer")
-                        new_p = st.text_input("NEW SECURITY KEY", type="password", key="forgot_new_p")
-                        if st.button("RESET ACCESS"):
-                            if reset_password(f_user, f_answer, new_p):
-                                st.success("KEY RESET SUCCESSFUL.")
+                        st.markdown(f"""
+                        <div style='margin: 15px 0; padding: 10px; background: rgba(0, 242, 254, 0.1); border-radius: 8px; border: 1px dashed #00f2fe;'>
+                            <p style='font-size: 0.75em; color: #00f2fe; margin-bottom: 5px;'>SECURITY CHALLENGE:</p>
+                            <p style='font-weight: bold; color: white;'>{q}</p>
+                        </div>
+                        """, unsafe_allow_html=True)
+                        
+                        f_answer = st.text_input("KEY ANSWER", key="forgot_answer", placeholder="Enter your secret answer...")
+                        new_p = st.text_input("NEW SECURITY KEY", type="password", key="forgot_new_p", placeholder="Set a strong new password...")
+                        
+                        st.markdown("<div style='margin-top: 15px;'>", unsafe_allow_html=True)
+                        if st.button("RESET SYSTEM ACCESS", use_container_width=True):
+                            if not f_answer or not new_p:
+                                st.warning("Please provide both the answer and the new password.")
+                            elif f_user.upper() == "BADAM SUDHEER REDDY":
+                                st.error("CRITICAL ERROR: Developer account recovery must be performed via Master Terminal only.")
+                            elif reset_password(f_user, f_answer, new_p):
+                                st.success("PROTOCOL SUCCESS: SECURITY KEY UPDATED.")
+                                time.sleep(1)
+                                st.rerun()
                             else:
-                                st.error("INCORRECT KEY ANSWER.")
+                                st.error("CHALLENGE FAILED: INCORRECT KEY ANSWER.")
+                        st.markdown("</div>", unsafe_allow_html=True)
+                    else:
+                        st.error("IDENTIFIER NOT RECOGNIZED BY THE NETWORK.")
         
         with tab2:
             st.markdown("<h3 style='color: #7f00ff; font-family: Orbitron; margin-bottom: 20px;'>CREATE IDENTITY</h3>", unsafe_allow_html=True)
