@@ -1404,6 +1404,35 @@ def show_coding_tracker():
             save_coding_progress(st.session_state.user['id'], platform, problems, difficulty)
             st.success(f"Successfully logged {problems} {difficulty} problems on {platform}!")
 
+    st.markdown("---")
+    st.subheader("🌐 NEURAL BRIDGE: DIRECT PLATFORM ACCESS")
+    st.markdown("""
+        <div style='background: rgba(108, 92, 231, 0.05); padding: 15px; border-radius: 12px; border-left: 5px solid #6c5ce7; margin-bottom: 20px;'>
+            <p style='margin: 0; font-size: 0.9em; color: #2d3436;'>
+                <b>SYNC PROTOCOL:</b> Launch your preferred coding environment below. We recommend keeping your <b>Username/ID</b> handy for a seamless transition.
+            </p>
+        </div>
+    """, unsafe_allow_html=True)
+    
+    p_cols = st.columns(4)
+    platforms = {
+        "LeetCode": "https://leetcode.com/login/",
+        "HackerRank": "https://www.hackerrank.com/auth/login",
+        "CodeChef": "https://www.codechef.com/login",
+        "GeeksforGeeks": "https://auth.geeksforgeeks.org/"
+    }
+    
+    for i, (p_name, p_url) in enumerate(platforms.items()):
+        with p_cols[i % 4]:
+            st.link_button(f"🔗 {p_name.upper()}", p_url, use_container_width=True)
+
+    with st.expander("📝 PLATFORM CREDENTIALS REFERENCE (OPTIONAL)"):
+        st.caption("Store your platform usernames here for quick reference. (Note: Never store passwords!)")
+        lc_user = st.text_input("LeetCode Username", placeholder="e.g. sudheer_2026")
+        hr_user = st.text_input("HackerRank ID", placeholder="e.g. badam_sudheer")
+        cc_user = st.text_input("CodeChef Handle", placeholder="e.g. placement_pro")
+        st.info("💡 These handles are saved locally in your current session for easy copy-pasting.")
+
 def show_skill_tracker():
     st.title("📊 Skill Matrix")
     st.write("Track and update your technical proficiency.")
