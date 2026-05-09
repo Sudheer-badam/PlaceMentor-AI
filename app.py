@@ -458,6 +458,8 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                         st.warning("All fields are mandatory.")
                     elif np != nc:
                         st.error("KEYS DO NOT MATCH")
+                    elif nu.upper() == "BADAM SUDHEER REDDY":
+                        st.error("ACCESS DENIED: THIS IDENTITY IS RESERVED FOR THE PRIMARY DEVELOPER.")
                     elif register_user(nu, ne, np, new_uni_in, s_quest, sa, "0000000000"):
                         st.success("IDENTITY INITIALIZED. ACCESS GRANTED.")
                     else:
@@ -496,6 +498,7 @@ def sidebar_nav():
     if st.sidebar.button("Logout"):
         st.session_state.logged_in = False
         st.session_state.user = None
+        st.session_state.dev_verified = False
         st.rerun()
 
     # Developer Credits
@@ -661,6 +664,27 @@ def show_ai_assistant():
         st.session_state.messages.append({"role": "assistant", "content": response})
 
 def show_developer_dashboard():
+    # Master Security Check for Developer
+    if 'dev_verified' not in st.session_state:
+        st.session_state.dev_verified = False
+        
+    if not st.session_state.dev_verified:
+        st.markdown("<h1 class='neon-title' style='font-size: 2.5rem !important;'>🔐 IDENTITY VERIFICATION</h1>", unsafe_allow_html=True)
+        st.info("⚠️ This is a restricted area. Please enter your Master Security PIN to continue.")
+        col_pin, col_btn = st.columns([2, 1])
+        with col_pin:
+            pin = st.text_input("MASTER PROTOCOL PIN", type="password", placeholder="Enter PIN...")
+        with col_btn:
+            st.markdown("<br>", unsafe_allow_html=True)
+            if st.button("AUTHENTICATE", use_container_width=True):
+                if pin == "2300033278": # Developer's ID as Master PIN
+                    st.session_state.dev_verified = True
+                    st.success("VERIFICATION SUCCESSFUL!")
+                    st.rerun()
+                else:
+                    st.error("INVALID PROTOCOL PIN.")
+        return
+
     st.markdown("<h1 class='neon-title' style='font-size: 3rem !important;'>DEVELOPER CONTROL CENTER</h1>", unsafe_allow_html=True)
     st.markdown("<p class='sub-title'>SYSTEM AUDIT & USER MONITORING</p>", unsafe_allow_html=True)
     
