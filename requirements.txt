@@ -1,0 +1,13 @@
+streamlit
+pandas
+numpy
+scikit-learn
+matplotlib
+plotly
+pycryptodome
+pdfplumber
+spacy
+python-dotenv
+Pillow
+google-generativeai
+fpdf2

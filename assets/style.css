@@ -1,0 +1,467 @@
+/* PlaceMentor AI - Ultra Vibrant & Multi-Colour Theme */
+
+/* Global Background with animated mesh gradient */
+/* Global Background - Futuristic & Immersive */
+.stApp {
+    background: linear-gradient(rgba(0, 0, 0, 0.6), rgba(0, 0, 0, 0.6)), url("app/static/assets/futuristic_bg.png");
+    background-size: cover;
+    background-position: center;
+    background-attachment: fixed;
+    font-family: 'Inter', sans-serif;
+}
+
+/* Sidebar - Glassmorphism with Purple Tint */
+[data-testid="stSidebar"] {
+    background-color: rgba(255, 255, 255, 0.9);
+    backdrop-filter: blur(15px);
+    border-right: 2px solid #6c5ce7;
+}
+
+/* Multi-Colour Sidebar Navigation */
+section[data-testid="stSidebar"] .stRadio > div {
+    gap: 12px;
+}
+
+section[data-testid="stSidebar"] .stRadio label {
+    background: white;
+    border-radius: 12px;
+    padding: 12px 18px !important;
+    border: 1px solid #eee;
+    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 4px 6px rgba(0,0,0,0.02);
+    width: 100%;
+}
+
+/* Make the sidebar text rainbow animated */
+section[data-testid="stSidebar"] .stRadio label p {
+    background: linear-gradient(to right, #ff0000, #ff7f00, #f39c12, #00b894, #00f2fe, #6c5ce7, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 4s linear infinite;
+    font-weight: 700;
+}
+
+/* Individual Button Colours */
+/* Dashboard */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(1) label { border-left: 5px solid #6c5ce7; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(1) label:hover { background: #f3f0ff; transform: translateX(5px); }
+
+/* Predictor */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(2) label { border-left: 5px solid #ff7675; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(2) label:hover { background: #fff5f5; transform: translateX(5px); }
+
+/* Analyzer */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(3) label { border-left: 5px solid #55efc4; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(3) label:hover { background: #f0fff4; transform: translateX(5px); }
+
+/* Quiz */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(4) label { border-left: 5px solid #fdcb6e; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(4) label:hover { background: #fff9db; transform: translateX(5px); }
+
+/* Resources */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(5) label { border-left: 5px solid #00cec9; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(5) label:hover { background: #e6fffa; transform: translateX(5px); }
+
+/* Coding */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(6) label { border-left: 5px solid #0984e3; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(6) label:hover { background: #ebf8ff; transform: translateX(5px); }
+
+/* Skill Matrix */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(7) label { border-left: 5px solid #a29bfe; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(7) label:hover { background: #f8f7ff; transform: translateX(5px); }
+
+/* Support */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(8) label { border-left: 5px solid #e84393; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(8) label:hover { background: #fff0f6; transform: translateX(5px); }
+
+/* Settings */
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(9) label { border-left: 5px solid #636e72; }
+section[data-testid="stSidebar"] .stRadio div[role="radiogroup"] > div:nth-child(9) label:hover { background: #f1f2f6; transform: translateX(5px); }
+
+/* Selected State */
+section[data-testid="stSidebar"] .stRadio label[data-checked="true"] {
+    background: linear-gradient(90deg, #6c5ce7, #a29bfe) !important;
+    color: white !important;
+    border: none !important;
+    box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2) !important;
+}
+
+section[data-testid="stSidebar"] .stRadio label[data-checked="true"] p {
+    background: none !important;
+    -webkit-text-fill-color: white !important;
+    color: white !important;
+}
+
+/* Hero Section - Multi-Colour Gradient */
+.hero-section {
+    background: linear-gradient(45deg, #ff9a9e 0%, #fad0c4 99%, #fad0c4 100%);
+    padding: 50px;
+    border-radius: 25px;
+    color: #2d3436;
+    text-align: center;
+    margin-bottom: 30px;
+    box-shadow: 0 15px 30px rgba(0,0,0,0.1);
+    border: 2px solid white;
+}
+
+/* Dashboard Metric Cards - Unique Colours */
+[data-testid="stMetric"] {
+    background: white;
+    border-radius: 20px;
+    padding: 20px;
+    border-bottom: 5px solid #6c5ce7; /* Default */
+    box-shadow: 0 10px 20px rgba(0,0,0,0.05);
+}
+
+/* Target specific metrics by position for varied colours */
+div[data-testid="stHorizontalBlock"] > div:nth-child(1) [data-testid="stMetric"] { border-bottom-color: #6c5ce7; background: #f3f0ff; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(2) [data-testid="stMetric"] { border-bottom-color: #00b894; background: #e6fffa; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(3) [data-testid="stMetric"] { border-bottom-color: #0984e3; background: #e1f5fe; }
+div[data-testid="stHorizontalBlock"] > div:nth-child(4) [data-testid="stMetric"] { border-bottom-color: #fdcb6e; background: #fff9db; }
+
+/* Digital Numericals for Metrics */
+[data-testid="stMetricValue"], 
+.stMetric value, 
+h1, h2, h3,
+.digital-num {
+    font-family: 'Orbitron', sans-serif !important;
+    letter-spacing: 1px;
+}
+
+[data-testid="stMetricValue"] {
+    background: linear-gradient(to bottom, #2d3436, #6c5ce7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-weight: 700 !important;
+}
+
+/* Checklist - Colourful Checkboxes */
+.stCheckbox > label > div[data-testid="stMarkdownContainer"] p {
+    font-weight: 600;
+    color: #2d3436;
+}
+
+/* Custom Card Styling */
+.card {
+    background: white;
+    padding: 30px;
+    border-radius: 20px;
+    box-shadow: 0 10px 30px rgba(0,0,0,0.05);
+    border-left: 8px solid #6c5ce7;
+    margin-bottom: 25px;
+    transition: transform 0.3s ease;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+/* Sliders - Colourful Track */
+.stSlider [data-baseweb="slider"] > div > div {
+    background: linear-gradient(to right, #ff7675, #fab1a0, #55efc4);
+}
+
+/* Buttons - Rainbow Gradient */
+.stButton>button {
+    background: linear-gradient(to right, #6c5ce7, #00cec9);
+    border: none;
+    border-radius: 15px;
+    height: 50px;
+    color: white;
+    font-weight: 800;
+    letter-spacing: 1px;
+    box-shadow: 0 10px 20px rgba(108, 92, 231, 0.2);
+}
+
+.stButton>button:hover {
+    background: linear-gradient(to right, #00cec9, #6c5ce7);
+    box-shadow: 0 15px 30px rgba(0,206,201,0.3);
+}
+
+/* Expanders - Soft Colours */
+.stExpander {
+    background-color: rgba(255, 255, 255, 0.95);
+    border-radius: 15px;
+    border: 1px solid #eee;
+    margin-bottom: 10px;
+    box-shadow: 0 4px 15px rgba(0,0,0,0.05);
+}
+
+/* Make all text inside expanders rainbow colored */
+.stExpander p, .stExpander label, .stExpander span, .stExpander li {
+    background: linear-gradient(to right, #ff0000, #ff7f00, #f39c12, #00b894, #00f2fe, #6c5ce7, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 4s linear infinite;
+    font-weight: 700 !important;
+}
+
+/* Titles - Gradient Text */
+.stTitle {
+    background: linear-gradient(to right, #2d3436, #6c5ce7);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    font-size: 3rem !important;
+}
+
+/* Success/Info Banners */
+.stAlert {
+    border-radius: 15px;
+    border: none;
+    box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.stAlert p {
+    background: linear-gradient(to right, #ff0000, #ff7f00, #f39c12, #00b894, #00f2fe, #6c5ce7, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 4s linear infinite;
+    font-weight: 700 !important;
+}
+
+/* --- Futuristic Login Page Enhancements --- */
+
+.glass-card {
+    background: transparent;
+    backdrop-filter: none;
+    -webkit-backdrop-filter: none;
+    border-radius: 30px;
+    border: none;
+    padding: 35px;
+    box-shadow: none;
+    color: white;
+    margin-top: -150px;
+    position: relative;
+    z-index: 10;
+}
+
+.neon-title {
+    font-family: 'Orbitron', sans-serif;
+    font-weight: 900;
+    font-size: 5.5rem !important;
+    text-align: center;
+    background: linear-gradient(to right, #00f2fe, #4facfe, #7f00ff, #e100ff);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    filter: drop-shadow(0 0 15px rgba(0, 242, 254, 0.6));
+    margin-bottom: 0 !important;
+    animation: title-flicker 5s infinite;
+}
+
+@keyframes title-flicker {
+    0%, 18%, 22%, 25%, 53%, 57%, 100% { opacity: 1; }
+    20%, 24%, 55% { opacity: 0.8; }
+}
+
+.institution-header {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 20px;
+    background: transparent;
+    padding: 15px;
+    border-radius: 20px;
+    border: none;
+    margin-bottom: 25px;
+    box-shadow: none;
+}
+
+@keyframes header-glow {
+    from { box-shadow: 0 0 10px rgba(0, 242, 254, 0.1); border-color: rgba(0, 242, 254, 0.3); }
+    to { box-shadow: 0 0 30px rgba(0, 242, 254, 0.4); border-color: rgba(0, 242, 254, 0.6); }
+}
+
+.login-model-img {
+    border-radius: 30px;
+    box-shadow: 0 0 60px rgba(127, 0, 255, 0.5);
+    border: 2px solid rgba(255, 255, 255, 0.15);
+    transition: all 0.5s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.login-model-img:hover {
+    transform: scale(1.02) rotate(1deg);
+    box-shadow: 0 0 80px rgba(127, 0, 255, 0.6);
+}
+
+/* Custom Input Styling for Dark/Futuristic Theme */
+div[data-baseweb="input"] {
+    background-color: rgba(0, 0, 0, 0.6) !important;
+    border-radius: 12px !important;
+    border: 1px solid rgba(0, 242, 254, 0.3) !important;
+    transition: all 0.3s ease !important;
+}
+
+div[data-baseweb="input"] > div {
+    background-color: transparent !important;
+}
+
+div[data-baseweb="input"] input {
+    color: #ffffff !important;
+    padding: 12px 15px !important;
+    font-weight: 600 !important;
+    background-color: transparent !important;
+}
+
+div[data-baseweb="input"]:focus-within {
+    border-color: #00f2fe !important;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.3) !important;
+    background-color: rgba(0, 0, 0, 0.8) !important;
+}
+
+.stTextInput label {
+    color: rgba(255, 255, 255, 0.8) !important;
+    font-weight: 500 !important;
+}
+
+/* Glowing Primary Button */
+.glowing-btn button {
+    background: linear-gradient(45deg, #00f2fe, #4facfe, #7f00ff) !important;
+    color: white !important;
+    border: none !important;
+    font-family: 'Orbitron', sans-serif !important;
+    text-transform: uppercase !important;
+    letter-spacing: 2px !important;
+    height: 60px !important;
+    transition: all 0.4s ease !important;
+    box-shadow: 0 0 20px rgba(0, 242, 254, 0.4) !important;
+}
+
+.glowing-btn button:hover {
+    transform: translateY(-3px) !important;
+    box-shadow: 0 0 40px rgba(0, 242, 254, 0.7) !important;
+    filter: brightness(1.2) !important;
+}
+
+/* Tabs Styling */
+.stTabs [data-baseweb="tab-list"] {
+    gap: 20px !important;
+    background-color: transparent !important;
+}
+
+.stTabs [data-baseweb="tab"] {
+    background-color: rgba(255, 255, 255, 0.05) !important;
+    border-radius: 10px 10px 0 0 !important;
+    color: white !important;
+    border: 1px solid rgba(255, 255, 255, 0.1) !important;
+}
+
+.stTabs [aria-selected="true"] {
+    background-color: rgba(255, 255, 255, 0.1) !important;
+    border-bottom: 4px solid #00f2fe !important;
+}
+
+/* Make Tab Labels Rainbow */
+.stTabs [data-baseweb="tab"] p {
+    background: linear-gradient(to right, #ff0000, #ff7f00, #f39c12, #00b894, #00f2fe, #6c5ce7, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 4s linear infinite;
+    font-weight: 800 !important;
+}
+
+/* CAPTCHA Box */
+.captcha-box {
+    background: rgba(0, 0, 0, 0.3);
+    padding: 20px;
+    border-radius: 15px;
+    border: 1px dashed rgba(0, 242, 254, 0.5);
+    margin: 15px 0;
+}
+
+/* Animation */
+@keyframes pulse {
+    0% { transform: scale(1); }
+    50% { transform: scale(1.05); }
+    100% { transform: scale(1); }
+}
+
+.pulse-glow {
+    animation: pulse 3s infinite ease-in-out;
+}
+
+/* Scanning Identity Effect */
+.stStatus {
+    background: rgba(0, 242, 254, 0.1) !important;
+    border: 1px solid #00f2fe !important;
+    color: #00f2fe !important;
+    border-radius: 15px !important;
+}
+
+div[data-testid="stStatus"] {
+    background: rgba(0, 242, 254, 0.1) !important;
+    border: 1px solid #00f2fe !important;
+}
+
+.rainbow-text {
+    background: linear-gradient(to right, #ff0000, #ff7f00, #ffff00, #00ff00, #00f2fe, #7f00ff, #ff0000);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: rainbow-shift 3s linear infinite;
+}
+
+/* Indian Tricolor Animation */
+.tricolor-text {
+    background: linear-gradient(to right, #FF9933, #FFFFFF, #138808, #FF9933);
+    background-size: 200% auto;
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    animation: tricolor-shift 3s linear infinite;
+    text-shadow: 0 0 10px rgba(255, 255, 255, 0.2);
+}
+
+@keyframes tricolor-shift {
+    to { background-position: 200% center; }
+}
+
+.tricolor-glow {
+    border: 4px solid white !important;
+    animation: tricolor-border 4s infinite linear;
+}
+
+@keyframes tricolor-border {
+    0% { border-color: #FF9933; box-shadow: 0 0 20px #FF9933; }
+    33% { border-color: #FFFFFF; box-shadow: 0 0 20px #FFFFFF; }
+    66% { border-color: #138808; box-shadow: 0 0 20px #138808; }
+    100% { border-color: #FF9933; box-shadow: 0 0 20px #FF9933; }
+}
+
+@keyframes rainbow-shift {
+    to { background-position: 200% center; }
+}
+
+/* Digital Input Styling */
+div[data-testid="stNumberInput"] {
+    background: rgba(0, 0, 0, 0.4) !important;
+    border: 1px solid #00f2fe !important;
+    border-radius: 10px !important;
+    padding: 5px !important;
+    box-shadow: 0 0 15px rgba(0, 242, 254, 0.2) !important;
+}
+
+div[data-testid="stNumberInput"] input {
+    font-family: 'Orbitron', sans-serif !important;
+    color: #00f2fe !important;
+    font-size: 1.5em !important;
+    text-align: center !important;
+}
+
+div[data-testid="stNumberInput"] label {
+    font-family: 'Orbitron', sans-serif !important;
+    color: white !important;
+    letter-spacing: 1px !important;
+    text-transform: uppercase !important;
+    font-size: 0.8em !important;
+}
+
+/* Custom Rainbow Button for Digital Increment */
+.digital-btn button {
+    background: linear-gradient(45deg, #FF9933, #FFFFFF, #138808) !important;
+    color: black !important;
+    font-weight: 900 !important;
+    border-radius: 5px !important;
+}

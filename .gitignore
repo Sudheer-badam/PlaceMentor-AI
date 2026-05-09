@@ -1,0 +1,15 @@
+venv/
+.venv/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+.streamlit/config.toml
+.streamlit/secrets.toml
+database/placementor.db
+database/placementor.db-journal
+datasets/*.json
+!datasets/all_colleges.json
+models/*.pkl
+.env
+.DS_Store
+*.log
