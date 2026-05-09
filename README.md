@@ -11,7 +11,7 @@ PlaceMentor AI is a comprehensive AI-powered placement preparation and career gu
 - **Aptitude Quiz**: Interactive testing system for placement prep.
 - **Coding Tracker**: Log and monitor coding progress.
 - **Skill Tracker**: Visualize technical and soft skill growth.
-- **Admin Dashboard**: Comprehensive overview for faculty/admins.
+- **Developer Console**: Comprehensive overview for the primary developer.
 - **Modern UI**: Dark/Light mode support with a premium aesthetic.
 
 ## 🛠️ Tech Stack
