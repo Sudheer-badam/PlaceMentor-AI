@@ -13,6 +13,7 @@ from database.db_manager import (
     get_security_logs, delete_user, update_user_status
 )
 from utils.ml_model import train_model
+from utils.platform_sync import sync_leetcode_stats, sync_harkerrank_stats
 from utils.quiz_data import QUIZ_DATA
 import plotly.graph_objects as go
 from fpdf import FPDF
@@ -1431,7 +1432,27 @@ def show_coding_tracker():
         lc_user = st.text_input("LeetCode Username", placeholder="e.g. sudheer_2026")
         hr_user = st.text_input("HackerRank ID", placeholder="e.g. badam_sudheer")
         cc_user = st.text_input("CodeChef Handle", placeholder="e.g. placement_pro")
-        st.info("💡 These handles are saved locally in your current session for easy copy-pasting.")
+        
+        if lc_user:
+            if st.button("🚀 SYNC LEETCODE LIVE DATA"):
+                with st.spinner("📡 Establishing Neural Link with LeetCode..."):
+                    result = sync_leetcode_stats(lc_user)
+                    if result["success"]:
+                        st.balloons()
+                        st.success(f"LIVE SYNC SUCCESSFUL: {result['totalSolved']} Problems Found!")
+                        st.json({
+                            "Total Solved": result["totalSolved"],
+                            "Easy": result["easy"],
+                            "Medium": result["medium"],
+                            "Hard": result["hard"],
+                            "Global Ranking": result["ranking"]
+                        })
+                        # Log to database as a bulk update
+                        save_coding_progress(st.session_state.user['id'], "LeetCode (Live Sync)", result["totalSolved"], "Dynamic")
+                    else:
+                        st.error("Neural link failed. Verify your username and try again.")
+        
+        st.info("💡 These handles are used for real-time synchronization and quick reference.")
 
 def show_skill_tracker():
     st.title("📊 Skill Matrix")
