@@ -402,7 +402,7 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                             # Use the university from login input if provided, otherwise from DB
                             final_uni = uni if uni else (user[4] if user[4] else "KL UNIVERSITY")
                             st.session_state.watermark_info = f"{final_uni} - {roll}"
-                            st.success("AUTHENTICATION SUCCESSFUL. LOADING INTERFACE...")
+                            # Instant transition
                             st.rerun()
                         else:
                             st.error("ACCESS DENIED: INVALID QUANTUM IDENTITY.")
@@ -944,18 +944,22 @@ def show_dashboard():
     
     fig_3d = go.Figure()
     
-    # Neural Connections (Lines between nearby points)
+    # Consolidate Neural Connections into a single trace for performance
+    line_x, line_y, line_z = [], [], []
     for _ in range(30):
         idx1 = random.randint(0, n_points-1)
         idx2 = random.randint(0, n_points-1)
-        fig_3d.add_trace(go.Scatter3d(
-            x=[x_cgpa[idx1], x_cgpa[idx2]],
-            y=[y_skills[idx1], y_skills[idx2]],
-            z=[z_prob[idx1], z_prob[idx2]],
-            mode='lines',
-            line=dict(color='rgba(0, 242, 254, 0.1)', width=1),
-            showlegend=False
-        ))
+        line_x.extend([x_cgpa[idx1], x_cgpa[idx2], None])
+        line_y.extend([y_skills[idx1], y_skills[idx2], None])
+        line_z.extend([z_prob[idx1], z_prob[idx2], None])
+        
+    fig_3d.add_trace(go.Scatter3d(
+        x=line_x, y=line_y, z=line_z,
+        mode='lines',
+        line=dict(color='rgba(0, 242, 254, 0.15)', width=1),
+        showlegend=False,
+        hoverinfo='none'
+    ))
 
     # Community Nodes
     fig_3d.add_trace(go.Scatter3d(
