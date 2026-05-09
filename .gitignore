@@ -7,8 +7,11 @@ __pycache__/
 .streamlit/secrets.toml
 database/placementor.db
 database/placementor.db-journal
-datasets/states/*.json
+datasets/*
+!datasets/states/
 !datasets/all_colleges.json
+datasets/states/*
+!datasets/states/*.json
 models/*.pkl
 .env
 .DS_Store

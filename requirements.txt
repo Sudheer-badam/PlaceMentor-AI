@@ -9,5 +9,5 @@ pdfplumber
 spacy
 python-dotenv
 Pillow
-google-generativeai
 fpdf2
+google-generativeai
