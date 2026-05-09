@@ -831,8 +831,31 @@ def show_dashboard():
                     <p style='margin: 0; color: #636e72; font-size: 0.9em;'>Official Career Excellence Portal</p>
                 </div>
             </div>
+            <div>
+                <p id='dash-live-clock' style='color: #6c5ce7; font-family: "Courier New"; font-weight: bold; font-size: 0.85em; margin: 0; background: rgba(108, 92, 231, 0.1); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.3);'>⏱️ IST: Loading...</p>
+            </div>
         </div>
     """, unsafe_allow_html=True)
+
+    import streamlit.components.v1 as components
+    components.html("""
+    <script>
+    function updateDashTime() {
+        const clock = window.parent.document.getElementById('dash-live-clock');
+        if (clock) {
+            const nd = new Date(new Date().toLocaleString("en-US", {timeZone: "Asia/Kolkata"}));
+            const days = ["Sun","Mon","Tue","Wed","Thu","Fri","Sat"];
+            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
+            let h = nd.getHours(), m = nd.getMinutes(), s = nd.getSeconds();
+            const ampm = h >= 12 ? 'PM' : 'AM';
+            h = h % 12 || 12;
+            clock.textContent = `⏱️ IST: ${days[nd.getDay()]}, ${String(nd.getDate()).padStart(2,'0')} ${months[nd.getMonth()]} ${nd.getFullYear()} | ${String(h).padStart(2,'0')}:${String(m).padStart(2,'0')}:${String(s).padStart(2,'0')} ${ampm}`;
+        }
+    }
+    setInterval(updateDashTime, 1000);
+    updateDashTime();
+    </script>
+    """, height=0, width=0)
     
     # Fetch real data
     total_problems, platforms = get_coding_stats(st.session_state.user['id'])
