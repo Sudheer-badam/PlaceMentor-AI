@@ -10,7 +10,7 @@ from database.db_manager import (
     save_coding_progress, get_coding_stats, get_community_stats,
     get_security_question, reset_password, post_notice, get_notices,
     delete_notice, send_feedback, get_all_feedback, get_all_user_stats,
-    get_security_logs, delete_user
+    get_security_logs, delete_user, update_user_status
 )
 from utils.ml_model import train_model
 from utils.quiz_data import QUIZ_DATA
@@ -393,7 +393,9 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                         st.rerun()
                     else:
                         user = login_user(u, p)
-                        if user:
+                        if isinstance(user, dict) and user.get("status") == "blocked":
+                            st.error(f"🛑 ACCESS RESTRICTED: {user['message']}")
+                        elif user:
                             st.session_state.logged_in = True
                             st.session_state.user = {"id": user[0], "username": user[1], "role": user[2], "university": user[4]}
                             # Use the university from login input if provided, otherwise from DB
@@ -737,6 +739,28 @@ def show_developer_dashboard():
                     st.error("Access Denied: You cannot remove the primary developer account.")
                 else:
                     success, message = delete_user(user_to_remove)
+                    if success:
+                        st.success(message)
+                        st.rerun()
+                    else:
+                        st.error(message)
+
+        st.markdown("---")
+        st.subheader("🛡️ Block / Restrict User Access")
+        with st.form("block_user_form"):
+            user_to_block = st.text_input("Username", placeholder="Enter username...")
+            action = st.radio("Action", ["Block Access", "Restore Access"], horizontal=True)
+            block_msg = st.text_area("Admin Message to User", placeholder="e.g. Your account has been suspended due to policy violations...")
+            submit_block = st.form_submit_button("UPDATE ACCOUNT STATUS")
+            
+            if submit_block:
+                if not user_to_block:
+                    st.warning("Please enter a username.")
+                elif user_to_block.upper() == "BADAM SUDHEER REDDY":
+                    st.error("Access Denied: You cannot block the primary developer account.")
+                else:
+                    new_status = 'blocked' if action == "Block Access" else 'active'
+                    success, message = update_user_status(user_to_block, new_status, block_msg)
                     if success:
                         st.success(message)
                         st.rerun()

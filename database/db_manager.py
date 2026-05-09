@@ -29,10 +29,15 @@ def init_db():
     ''')
     
     # Ensure columns exist in case table was created before
-    cols_to_add = ["security_question", "security_answer", "phone_number", "university"]
+    cols_to_add = [
+        "security_question", "security_answer", "phone_number", 
+        "university", "status", "block_message"
+    ]
     for col in cols_to_add:
         try:
             cursor.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
+            if col == "status":
+                cursor.execute("UPDATE users SET status = 'active' WHERE status IS NULL")
             conn.commit()
         except:
             pass
@@ -162,17 +167,22 @@ def register_user(username, email, password, university=None, security_q=None, s
         return False
 
 def login_user(identifier, password):
-    """Allows login using either username or email."""
+    """Allows login using either username or email, checking for blocked status."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
-        SELECT id, username, role, phone_number, university FROM users 
+        SELECT id, username, role, phone_number, university, status, block_message FROM users 
         WHERE (LOWER(username) = LOWER(?) OR LOWER(email) = LOWER(?)) 
         AND password = ?
     """, (identifier, identifier, hash_password(password)))
     user = cursor.fetchone()
     
     if user:
+        # Check if user is blocked
+        if user[5] == 'blocked':
+            conn.close()
+            return {"status": "blocked", "message": user[6] or "Your account has been restricted by the administrator."}
+            
         # Update last login timestamp in IST
         cursor.execute("UPDATE users SET last_login = datetime('now', '+5 hours', '+30 minutes') WHERE id = ?", (user[0],))
         # Log successful login in IST
@@ -190,6 +200,22 @@ def login_user(identifier, password):
         
     conn.close()
     return user
+
+def update_user_status(username, status, message=""):
+    """Updates the status (active/blocked) and message for a user."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        cursor.execute("UPDATE users SET status = ?, block_message = ? WHERE username = ?", (status, message, username))
+        conn.commit()
+        if cursor.rowcount > 0:
+            return True, f"User '{username}' status updated to {status}."
+        else:
+            return False, "User not found."
+    except Exception as e:
+        return False, str(e)
+    finally:
+        conn.close()
 
 def get_security_logs(user_id):
     """Fetches recent login activity for the user."""
