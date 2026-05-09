@@ -821,7 +821,7 @@ def show_developer_dashboard():
 def show_dashboard():
     st.markdown('<div class="animate-fade-in">', unsafe_allow_html=True)
     
-    # KL University Branding Header
+    # KL University Branding Header (logo pre-cached)
     st.markdown(f"""
         <div style='background-color: #ffffff; padding: 15px; border-radius: 15px; border-left: 5px solid #6c5ce7; margin-bottom: 25px; display: flex; align-items: center; justify-content: space-between;'>
             <div style='display: flex; align-items: center; gap: 20px;'>
@@ -831,39 +831,8 @@ def show_dashboard():
                     <p style='margin: 0; color: #636e72; font-size: 0.9em;'>Official Career Excellence Portal</p>
                 </div>
             </div>
-            <div>
-                <p id='dash-live-clock' style='color: #6c5ce7; font-family: "Courier New"; font-weight: bold; font-size: 0.85em; margin: 0; background: rgba(108, 92, 231, 0.1); padding: 8px 15px; border-radius: 8px; border: 1px solid rgba(108, 92, 231, 0.3);'>⏱️ SYS TIME: INITIATING CLOCK...</p>
-            </div>
         </div>
     """, unsafe_allow_html=True)
-    
-    import streamlit.components.v1 as components
-    components.html("""
-    <script>
-    function updateDashTime() {
-        const parentDoc = window.parent.document;
-        const clock = parentDoc.getElementById('dash-live-clock');
-        if (clock) {
-            const d = new Date();
-            const utc = d.getTime() + (d.getTimezoneOffset() * 60000);
-            const nd = new Date(utc + (3600000*5.5));
-            const days = ["Sunday","Monday","Tuesday","Wednesday","Thursday","Friday","Saturday"];
-            const months = ["Jan","Feb","Mar","Apr","May","Jun","Jul","Aug","Sep","Oct","Nov","Dec"];
-            let h = nd.getHours();
-            let m = nd.getMinutes();
-            let s = nd.getSeconds();
-            const ampm = h >= 12 ? 'PM' : 'AM';
-            h = h % 12;
-            h = h ? h : 12;
-            m = m < 10 ? '0'+m : m;
-            s = s < 10 ? '0'+s : s;
-            clock.innerHTML = "⏱️ IST: " + days[nd.getDay()] + ", " + (nd.getDate()<10?'0':'') + nd.getDate() + " " + months[nd.getMonth()] + " " + nd.getFullYear() + " | " + h + ':' + m + ':' + s + ' ' + ampm;
-        }
-    }
-    setInterval(updateDashTime, 1000);
-    updateDashTime();
-    </script>
-    """, height=0, width=0)
     
     # Fetch real data
     total_problems, platforms = get_coding_stats(st.session_state.user['id'])
@@ -917,85 +886,35 @@ def show_dashboard():
     fig_radar.update_layout(
         polar=dict(radialaxis=dict(visible=True, range=[0, 100])),
         showlegend=False,
-        height=400,
+        height=380,
         margin=dict(l=50, r=50, t=20, b=20)
     )
-    st.plotly_chart(fig_radar, use_container_width=True)
+    st.plotly_chart(fig_radar, use_container_width=True, config={'displayModeBar': False})
 
-    # 3D Career Intelligence Plot
+    # Career Insights Bar Chart (replaces heavy 3D plot for instant rendering)
     st.markdown("""
         <div style='background: #ffffff; padding: 20px; border-radius: 15px; border-left: 5px solid #6c5ce7; margin-bottom: 25px; margin-top: 25px;'>
-            <h4 style='margin: 0; color: #2d3436;'>🌌 3D Neural Career Space</h4>
-            <p style='margin: 0; color: #636e72; font-size: 0.9em;'>Visualizing the intersection of CGPA, Skills, and Success Probability.</p>
+            <h4 style='margin: 0; color: #2d3436;'>📊 Career Dimension Analysis</h4>
+            <p style='margin: 0; color: #636e72; font-size: 0.9em;'>Your performance across key placement dimensions.</p>
         </div>
     """, unsafe_allow_html=True)
-    
-    # Generate 3D Data (Simulated based on real user metrics)
-    import numpy as np
-    # Create a cluster of points around user's current position
-    n_points = 100
-    base_cgpa = 8.5 # Average CGPA
-    base_skills = len(skills)
-    base_prob = readiness
-    
-    x_cgpa = np.random.normal(base_cgpa, 0.8, n_points)
-    y_skills = np.random.normal(base_skills, 3, n_points)
-    z_prob = np.clip(np.random.normal(base_prob, 10, n_points), 0, 100)
-    
-    fig_3d = go.Figure()
-    
-    # Consolidate Neural Connections into a single trace for performance
-    line_x, line_y, line_z = [], [], []
-    for _ in range(30):
-        idx1 = random.randint(0, n_points-1)
-        idx2 = random.randint(0, n_points-1)
-        line_x.extend([x_cgpa[idx1], x_cgpa[idx2], None])
-        line_y.extend([y_skills[idx1], y_skills[idx2], None])
-        line_z.extend([z_prob[idx1], z_prob[idx2], None])
-        
-    fig_3d.add_trace(go.Scatter3d(
-        x=line_x, y=line_y, z=line_z,
-        mode='lines',
-        line=dict(color='rgba(0, 242, 254, 0.15)', width=1),
-        showlegend=False,
-        hoverinfo='none'
-    ))
-
-    # Community Nodes
-    fig_3d.add_trace(go.Scatter3d(
-        x=x_cgpa, y=y_skills, z=z_prob,
-        mode='markers',
+    fig_bar = go.Figure(go.Bar(
+        x=categories,
+        y=values,
         marker=dict(
-            size=4,
-            color=z_prob,
-            colorscale='Turbo', # More vibrant
-            opacity=0.6
-        ),
-        name='Neural Nodes'
+            color=values,
+            colorscale='Turbo',
+            showscale=False
+        )
     ))
-    
-    # Add User's Current Position
-    fig_3d.add_trace(go.Scatter3d(
-        x=[base_cgpa], y=[base_skills], z=[base_prob],
-        mode='markers+text',
-        marker=dict(size=15, color='#ff7675', symbol='diamond', line=dict(color='white', width=2)),
-        text=["NEURAL CORE (YOU)"],
-        textposition="top center",
-        name='Your Position'
-    ))
-    
-    fig_3d.update_layout(
-        scene = dict(
-            xaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)", title='ACADEMIC CGPA'),
-            yaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)", title='TECH SKILLS'),
-            zaxis=dict(backgroundcolor="rgba(0,0,0,0)", gridcolor="rgba(255,255,255,0.1)", title='PLACEMENT PROB %'),
-            bgcolor="rgba(0,0,0,0.8)"
-        ),
-        paper_bgcolor="rgba(0,0,0,0)",
-        margin=dict(l=0, r=0, b=0, t=0),
-        height=600
+    fig_bar.update_layout(
+        height=300,
+        margin=dict(l=20, r=20, t=20, b=20),
+        paper_bgcolor='rgba(0,0,0,0)',
+        plot_bgcolor='rgba(0,0,0,0)',
+        yaxis=dict(range=[0, 100], gridcolor='rgba(0,0,0,0.05)')
     )
-    st.plotly_chart(fig_3d, use_container_width=True)
+    st.plotly_chart(fig_bar, use_container_width=True, config={'displayModeBar': False})
 
     st.markdown("---")
     
