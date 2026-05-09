@@ -380,6 +380,34 @@ def get_security_logs(user_id=None):
     conn.close()
     return res
 
+def delete_user(username):
+    """Permanently deletes a user and all their associated data from the system."""
+    conn = sqlite3.connect(DB_PATH)
+    cursor = conn.cursor()
+    try:
+        # Get user ID first
+        cursor.execute("SELECT id FROM users WHERE username = ?", (username,))
+        user_res = cursor.fetchone()
+        if not user_res:
+            return False, "User not found."
+        
+        user_id = user_res[0]
+        
+        # Delete from all associated tables
+        tables = ["quiz_scores", "skills", "resume_analysis", "predictions", "coding_tracker", "support_tickets", "login_logs"]
+        for table in tables:
+            cursor.execute(f"DELETE FROM {table} WHERE user_id = ?", (user_id,))
+            
+        # Delete from users table
+        cursor.execute("DELETE FROM users WHERE id = ?", (user_id,))
+        
+        conn.commit()
+        return True, f"User '{username}' and all associated data have been removed."
+    except Exception as e:
+        return False, f"Error deleting user: {str(e)}"
+    finally:
+        conn.close()
+
 if __name__ == "__main__":
     init_db()
     print("Database initialized successfully!")

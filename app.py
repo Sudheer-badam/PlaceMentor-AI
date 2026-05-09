@@ -10,7 +10,7 @@ from database.db_manager import (
     save_coding_progress, get_coding_stats, get_community_stats,
     get_security_question, reset_password, post_notice, get_notices,
     delete_notice, send_feedback, get_all_feedback, get_all_user_stats,
-    get_security_logs
+    get_security_logs, delete_user
 )
 from utils.ml_model import train_model
 from utils.quiz_data import QUIZ_DATA
@@ -675,6 +675,28 @@ def show_developer_dashboard():
             st.dataframe(df, use_container_width=True)
         else:
             st.info("No user data available.")
+            
+        st.markdown("---")
+        st.subheader("🗑️ Remove User Node")
+        with st.form("remove_user_form"):
+            user_to_remove = st.text_input("Username to Remove", placeholder="Enter exact username...")
+            confirm_check = st.checkbox("I confirm that I want to permanently delete this user and all their data.")
+            submit_remove = st.form_submit_button("REMOVE USER PERMANENTLY")
+            
+            if submit_remove:
+                if not user_to_remove:
+                    st.warning("Please enter a username.")
+                elif not confirm_check:
+                    st.error("Please confirm the deletion.")
+                elif user_to_remove.upper() == "BADAM SUDHEER REDDY":
+                    st.error("Access Denied: You cannot remove the primary developer account.")
+                else:
+                    success, message = delete_user(user_to_remove)
+                    if success:
+                        st.success(message)
+                        st.rerun()
+                    else:
+                        st.error(message)
             
     with tab2:
         st.subheader("Quantum Security Audit")
