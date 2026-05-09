@@ -486,9 +486,9 @@ def sidebar_nav():
     
     nav_options = ["🏠 Dashboard", "💬 AI Career Assistant", "🎯 AI Placement Predictor", "📄 Resume Analyzer", "📝 Aptitude Quiz", "📚 Career Resources", "💻 Coding Tracker", "📊 Skill Tracker", "📞 Support & Feedback", "⚙️ Settings"]
     
-    # Add Developer Panel for Admins
+    # Add Developer Panel exclusively for the Developer
     current_user = st.session_state.user.get('username', '').upper()
-    if st.session_state.user.get('role') == 'admin' or current_user == 'BADAM SUDHEER REDDY':
+    if current_user == 'BADAM SUDHEER REDDY':
         nav_options.append("👨‍💻 Developer Control Center")
         
     page = st.sidebar.radio("Navigate", nav_options)
@@ -1084,13 +1084,21 @@ def show_predictor():
         st.markdown("<p style='font-size: 0.7em; color: rgba(255,255,255,0.5);'>DIGITAL PRESETS:</p>", unsafe_allow_html=True)
         cp1, cp2, cp3, cp4 = st.columns(4)
         with cp1: 
-            if st.button("7.50", key="c75", use_container_width=True): st.session_state.main_cgpa = 7.50
+            if st.button("7.50", key="c75", use_container_width=True): 
+                st.session_state.main_cgpa = 7.50
+                st.rerun()
         with cp2:
-            if st.button("8.00", key="c80", use_container_width=True): st.session_state.main_cgpa = 8.00
+            if st.button("8.00", key="c80", use_container_width=True): 
+                st.session_state.main_cgpa = 8.00
+                st.rerun()
         with cp3:
-            if st.button("8.50", key="c85", use_container_width=True): st.session_state.main_cgpa = 8.50
+            if st.button("8.50", key="c85", use_container_width=True): 
+                st.session_state.main_cgpa = 8.50
+                st.rerun()
         with cp4:
-            if st.button("9.00", key="c90", use_container_width=True): st.session_state.main_cgpa = 9.00
+            if st.button("9.00", key="c90", use_container_width=True): 
+                st.session_state.main_cgpa = 9.00
+                st.rerun()
         
         st.markdown("<br>", unsafe_allow_html=True)
         aptitude = st.slider("🧠 APTITUDE SCORE (VERBAL & QUANT)", 0, 100, 75, help="Based on your internal mock tests.")
@@ -1371,7 +1379,13 @@ def show_support():
 def show_settings():
     st.title("⚙️ Settings")
     
-    tab1, tab2, tab3 = st.tabs(["👤 Profile", "👨‍💻 Admin Console", "🛡️ Security Center"])
+    current_user = st.session_state.user.get('username', '').upper()
+    is_developer = current_user == 'BADAM SUDHEER REDDY'
+
+    if is_developer:
+        tab1, tab2, tab3 = st.tabs(["👤 Profile", "👨‍💻 Developer Console", "🛡️ Security Center"])
+    else:
+        tab1, tab3 = st.tabs(["👤 Profile", "🛡️ Security Center"])
     
     with tab1:
         st.write("Manage your account and preferences.")
@@ -1395,9 +1409,10 @@ def show_settings():
         st.markdown("---")
         st.info("💡 **Security Tip:** Use a mix of symbols, numbers, and uppercase letters for a stronger password.")
     
-    with tab2:
-        st.subheader("Developer Admin Control")
-        st.info("This section is only for the developer to manage campus-wide updates.")
+    if is_developer:
+        with tab2:
+            st.subheader("Developer Control")
+            st.info("This section is only for the developer to manage campus-wide updates.")
         
         # Post Notice
         with st.expander("📢 Post New Campus Notice", expanded=True):
