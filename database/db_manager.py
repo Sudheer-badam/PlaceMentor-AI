@@ -303,7 +303,7 @@ def get_user_skills(user_id):
 def save_coding_progress(user_id, platform, problems, difficulty):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("INSERT INTO coding_tracker (user_id, platform, problems, difficulty, date_solved) VALUES (?, ?, ?, ?, datetime('now', '+5 hours', '+30 minutes'))",
+    cursor.execute("INSERT INTO coding_tracker (user_id, platform, problems, difficulty, date) VALUES (?, ?, ?, ?, datetime('now', '+5 hours', '+30 minutes'))",
                    (user_id, platform, problems, difficulty))
     conn.commit()
     conn.close()
