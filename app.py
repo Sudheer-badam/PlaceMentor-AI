@@ -6,10 +6,12 @@ import random
 import string
 import time
 
-# Use bundled external_libs for packages not installable due to disk space
-_ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_libs")
-if _ext_libs not in sys.path:
-    sys.path.insert(0, _ext_libs)
+# Use bundled external_libs only on Windows local environments (to handle user's disk space issues)
+# On Streamlit Cloud (Linux), we MUST use the native environment.
+if os.name == 'nt':
+    _ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_libs")
+    if _ext_libs not in sys.path:
+        sys.path.insert(0, _ext_libs)
 from database.db_manager import (
     init_db, register_user, login_user, save_quiz_score, 
     get_user_scores, save_skill, get_user_skills, 
