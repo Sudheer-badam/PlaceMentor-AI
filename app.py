@@ -21,6 +21,7 @@ from database.db_manager import (
 from utils.ml_model import train_model
 from utils.platform_sync import sync_leetcode_stats, sync_harkerrank_stats
 from utils.quiz_data import QUIZ_DATA
+from utils.social_sync import fetch_klu_live_notices
 import plotly.graph_objects as go
 from fpdf import FPDF
 import io
@@ -827,6 +828,22 @@ def show_developer_dashboard():
                 st.success("Notice posted successfully!")
                 st.rerun()
                 
+        # Sync Live Updates
+        st.markdown("---")
+        st.subheader("🌐 Social & Official Sync")
+        st.write("Fetch latest updates directly from KL University's official channels (Website, Social Media).")
+        if st.button("⚡ SYNC KLU LIVE UPDATES", use_container_width=True):
+            with st.spinner("Connecting to KLU Neural Feed..."):
+                live_data = fetch_klu_live_notices()
+                if live_data:
+                    for item in live_data:
+                        # Prevent duplicate syncs by checking if already posted (basic check)
+                        post_notice(item['content'])
+                    st.success(f"Successfully synced {len(live_data)} live updates!")
+                    st.rerun()
+                else:
+                    st.error("Could not reach official servers. Try again later.")
+
         # List and delete existing notices
         st.markdown("---")
         st.markdown("**Active Notices:**")
@@ -998,9 +1015,26 @@ def show_dashboard():
         notices = get_notices()
         if notices:
             for nid, n, d in notices:
-                st.warning(f"🔔 {n}")
+                is_live = "[Live]" in n or "[Social]" in n
+                if is_live:
+                    st.markdown(f"""
+                        <div style='background: rgba(108, 92, 231, 0.05); padding: 12px; border-radius: 10px; border: 1px solid rgba(108, 92, 231, 0.2); margin-bottom: 10px; position: relative; overflow: hidden;'>
+                            <div style='display: flex; justify-content: space-between; align-items: center; margin-bottom: 5px;'>
+                                <span style='background: #ff4757; color: white; padding: 2px 8px; border-radius: 4px; font-size: 0.6em; font-weight: bold; animation: pulse 2s infinite;'>LIVE UPDATE</span>
+                                <span style='font-size: 0.7em; color: #636e72;'>{d}</span>
+                            </div>
+                            <p style='margin: 0; color: #2d3436; font-size: 0.85em; font-weight: 500;'>{n.replace("[Live] ", "").replace("[Social] ", "")}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
+                else:
+                    st.markdown(f"""
+                        <div style='background: #f1f2f6; padding: 12px; border-radius: 10px; margin-bottom: 10px;'>
+                            <p style='margin: 0; color: #2d3436; font-size: 0.85em;'>{n}</p>
+                            <p style='margin-top: 5px; margin-bottom: 0; font-size: 0.7em; color: #636e72;'>📅 {d}</p>
+                        </div>
+                    """, unsafe_allow_html=True)
         else:
-            st.write("No active notices from KL University.")
+            st.info("No active notices.")
         
         st.markdown("---")
         st.subheader("✅ Prep Checklist")

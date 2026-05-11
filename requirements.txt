@@ -12,3 +12,4 @@ Pillow
 fpdf2
 google-generativeai
 requests
+beautifulsoup4
