@@ -16,3 +16,4 @@ models/*.pkl
 .env
 .DS_Store
 *.log
+win_libs_do_not_push/

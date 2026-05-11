@@ -9,7 +9,7 @@ import time
 # Use bundled external_libs only on Windows local environments (to handle user's disk space issues)
 # On Streamlit Cloud (Linux), we MUST use the native environment.
 if os.name == 'nt':
-    _ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_libs")
+    _ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "win_libs_do_not_push")
     if _ext_libs not in sys.path:
         sys.path.insert(0, _ext_libs)
 from database.db_manager import (
