@@ -7,6 +7,11 @@ DB_PATH = os.path.join(os.path.dirname(__file__), "placementor.db")
 # Secure Salt for Hashing (In a real app, keep this in environment variables)
 SALT = "KLU_PLACEMENTOR_SECURE_2026"
 
+def hash_password(password):
+    """Secure Salted SHA-256 Hashing."""
+    salted_password = password + SALT
+    return hashlib.sha256(salted_password.encode()).hexdigest()
+
 def init_db():
     """Initializes the SQLite database and creates necessary tables."""
     conn = sqlite3.connect(DB_PATH)
@@ -36,11 +41,16 @@ def init_db():
     for col in cols_to_add:
         try:
             cursor.execute(f"ALTER TABLE users ADD COLUMN {col} TEXT")
-            if col == "status":
-                cursor.execute("UPDATE users SET status = 'active' WHERE status IS NULL")
             conn.commit()
         except:
             pass
+        # Always ensure status is set for all users
+        if col == "status":
+            try:
+                cursor.execute("UPDATE users SET status = 'active' WHERE status IS NULL OR status = ''")
+                conn.commit()
+            except:
+                pass
     
     # Ensure last_login exists in case table was created before
     try:
@@ -145,12 +155,21 @@ def init_db():
     ''')
 
     conn.commit()
-    conn.close()
 
-def hash_password(password):
-    """Secure Salted SHA-256 Hashing."""
-    salted_password = password + SALT
-    return hashlib.sha256(salted_password.encode()).hexdigest()
+    # --- Seed Developer Admin Account (always present, even after cloud restarts) ---
+    _dev_user = "BADAM SUDHEER REDDY"
+    _dev_email = "badamsudheerreddy@admin.placementor"
+    _dev_pass = hash_password("admin2300033278")
+    _dev_ans  = hash_password("kluniversity")
+    cursor.execute("""
+        INSERT OR IGNORE INTO users 
+        (username, email, password, role, university, security_question, security_answer, phone_number, status, last_login)
+        VALUES (?, ?, ?, 'admin', 'KL UNIVERSITY',
+                'What is your university name?', ?,
+                '0000000000', 'active', datetime('now', '+5 hours', '+30 minutes'))
+    """, (_dev_user, _dev_email, _dev_pass, _dev_ans))
+    conn.commit()
+    conn.close()
 
 def register_user(username, email, password, university=None, security_q=None, security_a=None, phone=None, role='student'):
     try:
@@ -202,29 +221,35 @@ def login_user(identifier, password):
     return user
 
 def update_user_status(username, status, message=""):
-    """Updates the status (active/blocked) and message for a user."""
+    """Updates the status (active/blocked) and message for a user. Case-insensitive username match."""
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     try:
-        cursor.execute("UPDATE users SET status = ?, block_message = ? WHERE username = ?", (status, message, username))
+        # Case-insensitive username lookup first to get the exact username
+        cursor.execute("SELECT id, username FROM users WHERE LOWER(username) = LOWER(?)", (username,))
+        user_row = cursor.fetchone()
+        if not user_row:
+            return False, f"User '{username}' not found in the system."
+        
+        user_id, exact_username = user_row
+        cursor.execute(
+            "UPDATE users SET status = ?, block_message = ? WHERE id = ?",
+            (status, message, user_id)
+        )
         conn.commit()
-        if cursor.rowcount > 0:
-            return True, f"User '{username}' status updated to {status}."
-        else:
-            return False, "User not found."
+        
+        # Log the admin action
+        action_label = "Admin Block" if status == 'blocked' else "Admin Restore"
+        cursor.execute(
+            "INSERT INTO login_logs (user_id, ip_address, status, date) VALUES (?, ?, ?, datetime('now', '+5 hours', '+30 minutes'))",
+            (user_id, "ADMIN_ACTION", action_label)
+        )
+        conn.commit()
+        return True, f"✅ User '{exact_username}' has been {'BLOCKED' if status == 'blocked' else 'RESTORED'} successfully."
     except Exception as e:
-        return False, str(e)
+        return False, f"Database error: {str(e)}"
     finally:
         conn.close()
-
-def get_security_logs(user_id):
-    """Fetches recent login activity for the user."""
-    conn = sqlite3.connect(DB_PATH)
-    cursor = conn.cursor()
-    cursor.execute("SELECT ip_address, status, date FROM login_logs WHERE user_id = ? ORDER BY date DESC LIMIT 5", (user_id,))
-    res = cursor.fetchall()
-    conn.close()
-    return res
 
 def get_community_stats():
     """Returns total registered users and the 5 most recently active users."""

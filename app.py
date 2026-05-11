@@ -1,9 +1,15 @@
 import streamlit as st
 import os
+import sys
 import base64
 import random
 import string
 import time
+
+# Use bundled external_libs for packages not installable due to disk space
+_ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "external_libs")
+if _ext_libs not in sys.path:
+    sys.path.insert(0, _ext_libs)
 from database.db_manager import (
     init_db, register_user, login_user, save_quiz_score, 
     get_user_scores, save_skill, get_user_skills, 
@@ -748,17 +754,37 @@ def show_developer_dashboard():
 
         st.markdown("---")
         st.subheader("🛡️ Block / Restrict User Access")
+        
+        # Show live user status table
+        try:
+            import pandas as pd
+            conn_tmp = __import__('sqlite3').connect("database/placementor.db")
+            cur_tmp = conn_tmp.cursor()
+            cur_tmp.execute("SELECT username, email, status, block_message FROM users ORDER BY username")
+            user_rows = cur_tmp.fetchall()
+            conn_tmp.close()
+            if user_rows:
+                df_status = pd.DataFrame(user_rows, columns=["Username", "Email", "Status", "Block Message"])
+                df_status["Status"] = df_status["Status"].fillna("active")
+                st.dataframe(df_status, use_container_width=True)
+        except Exception as e:
+            st.caption(f"Could not load user list: {e}")
+
         with st.form("block_user_form"):
-            user_to_block = st.text_input("Username", placeholder="Enter username...")
+            st.caption("💡 Username matching is **case-insensitive**. Refer to the table above for exact usernames.")
+            user_to_block = st.text_input("Username to Target", placeholder="Enter username (e.g. john_doe)...")
             action = st.radio("Action", ["Block Access", "Restore Access"], horizontal=True)
-            block_msg = st.text_area("Admin Message to User", placeholder="e.g. Your account has been suspended due to policy violations...")
-            submit_block = st.form_submit_button("UPDATE ACCOUNT STATUS")
+            block_msg = st.text_area(
+                "Admin Message (shown to user on login)",
+                placeholder="e.g. Your account has been suspended due to policy violations. Contact admin@kluniversity.in to appeal."
+            )
+            submit_block = st.form_submit_button("🔒 UPDATE ACCOUNT STATUS", use_container_width=True)
             
             if submit_block:
                 if not user_to_block:
-                    st.warning("Please enter a username.")
+                    st.warning("⚠️ Please enter a username.")
                 elif user_to_block.upper() == "BADAM SUDHEER REDDY":
-                    st.error("Access Denied: You cannot block the primary developer account.")
+                    st.error("🚫 Access Denied: You cannot block the primary developer account.")
                 else:
                     new_status = 'blocked' if action == "Block Access" else 'active'
                     success, message = update_user_status(user_to_block, new_status, block_msg)
@@ -766,7 +792,7 @@ def show_developer_dashboard():
                         st.success(message)
                         st.rerun()
                     else:
-                        st.error(message)
+                        st.error(f"❌ {message}")
             
     with tab2:
         st.subheader("Quantum Security Audit")
