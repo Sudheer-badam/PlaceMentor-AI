@@ -728,7 +728,7 @@ def show_developer_dashboard():
         stats = get_all_user_stats()
         if stats:
             import pandas as pd
-            df = pd.DataFrame(stats, columns=["Username", "Email", "Last Login", "Coding Problems", "Avg Quiz Score", "Skills Count"])
+            df = pd.DataFrame(stats, columns=["Username", "Email", "College", "Student ID", "Last Login", "Coding Problems", "Avg Quiz Score", "Skills Count"])
             st.dataframe(df, use_container_width=True)
         else:
             st.info("No user data available.")
