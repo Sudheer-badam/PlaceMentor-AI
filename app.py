@@ -252,7 +252,7 @@ def render_news_ticker():
     st.markdown(f"""
         <div class='ticker-wrap'>
             <div class='ticker'>
-                {ticker_items} {ticker_items} 
+                {ticker_items}
             </div>
         </div>
     """, unsafe_allow_html=True)
