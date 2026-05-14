@@ -425,7 +425,6 @@ def auth_page():
                 
                 if submit_login:
                     with st.spinner("🔐 ESTABLISHING SECURE NEURAL LINK..."):
-                        time.sleep(1.5)
                         u, p, c = u_in.strip(), p_in.strip(), captcha_in.strip()
                         uni, roll = uni_in.strip(), roll_in.strip()
                         if not u or not p or not c or not uni or not roll:
@@ -528,7 +527,6 @@ def auth_page():
                 
                 if submit_reg:
                     with st.spinner("🛡️ INITIALIZING IDENTITY PROTOCOLS..."):
-                        time.sleep(2)
                         nu, ne, np, nc = new_u_in.strip(), new_e_in.strip(), new_p_in.strip(), new_c_in.strip()
                         sa = s_ans_in.strip()
                         if not terms_agreed:
