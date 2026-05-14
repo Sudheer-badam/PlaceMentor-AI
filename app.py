@@ -213,6 +213,8 @@ def main():
         st.session_state.generated_otp = None
     if 'temp_user' not in st.session_state:
         st.session_state.temp_user = None
+    if 'auth_view' not in st.session_state:
+        st.session_state.auth_view = "landing"
 
     if st.session_state.logged_in:
         # High-Visibility Patriotic Watermark (Solid Tricolor)
@@ -351,15 +353,52 @@ def auth_page():
         </script>
         """, height=0, width=0)
         
-        tab1, tab2 = st.tabs(["⚡ SECURE LOGIN", "🛡️ JOIN NETWORK"])
-        
-        with tab1:
+        if st.session_state.auth_view == "landing":
+            st.markdown("""
+            <div style='text-align: center; margin-top: 10px;'>
+                <p style='color: #00f2fe; font-family: "Orbitron"; letter-spacing: 2px; font-size: 0.8em;'>CHOOSE YOUR ENTRY PROTOCOL</p>
+            </div>
+            """, unsafe_allow_html=True)
+            
+            col_l, col_r = st.columns(2, gap="medium")
+            
+            with col_l:
+                st.markdown("""
+                <div class="auth-action-card">
+                    <span class="auth-icon">⚡</span>
+                    <h4 class="rainbow-text">LOGIN</h4>
+                    <p>Access your existing career node</p>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("ENTER GATEWAY", use_container_width=True, key="go_to_login_btn"):
+                    st.session_state.auth_view = "login"
+                    st.rerun()
+                    
+            with col_r:
+                st.markdown("""
+                <div class="auth-action-card">
+                    <span class="auth-icon">🛡️</span>
+                    <h4 style="color: #7f00ff; text-shadow: 0 0 10px rgba(127,0,255,0.4);">SIGN UP</h4>
+                    <p>Initialize a new identity node</p>
+                </div>
+                """, unsafe_allow_html=True)
+                if st.button("JOIN NETWORK", use_container_width=True, key="go_to_signup_btn"):
+                    st.session_state.auth_view = "signup"
+                    st.rerun()
+            
+            st.markdown("""
+            <div style='text-align: center; margin-top: 50px;'>
+                <p style='color: rgba(255,255,255,0.3); font-size: 0.65em; letter-spacing: 1px;'>SECURED BY QUANTUM ENCRYPTION v4.0.2</p>
+            </div>
+            """, unsafe_allow_html=True)
+
+        elif st.session_state.auth_view == "login":
             st.markdown("""
 <p class='rainbow-text' style='font-size: 0.9em; text-align: center; margin-bottom: 20px; font-weight: 900; letter-spacing: 1px;'>
 ⚠️ ALL FIELDS INCLUDING CAPTCHA ARE MANDATORY
 </p>
 """, unsafe_allow_html=True)
-            st.markdown("<h3 style='color: #00f2fe; font-family: Orbitron; margin-bottom: 20px;'>SYSTEM ACCESS</h3>", unsafe_allow_html=True)
+            st.markdown("<h3 style='color: #00f2fe; font-family: Orbitron; margin-bottom: 20px; text-align: center;'>SYSTEM ACCESS</h3>", unsafe_allow_html=True)
             
             with st.form("login_form"):
                 uni_in = st.selectbox("UNIVERSITY / COLLEGE", COLLEGE_NAMES, key="login_uni", help="Start typing to search your institution")
@@ -384,12 +423,6 @@ def auth_page():
                 submit_login = st.form_submit_button("AUTHENTICATE SYSTEM", use_container_width=True)
                 st.markdown("</div>", unsafe_allow_html=True)
                 
-                st.markdown("""
-<p style='font-size: 0.7em; color: rgba(255,255,255,0.6); text-align: center; margin-top: 10px;'>
-By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai-badamsudheerreddy.streamlit.app/' style='color: #00f2fe;'>Terms & Conditions</a> and <a href='https://placementor-ai-badamsudheerreddy.streamlit.app/' style='color: #00f2fe;'>Privacy Policy</a>.
-</p>
-""", unsafe_allow_html=True)
-                
                 if submit_login:
                     u, p, c = u_in.strip(), p_in.strip(), captcha_in.strip()
                     uni, roll = uni_in.strip(), roll_in.strip()
@@ -408,13 +441,21 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                         elif user:
                             st.session_state.logged_in = True
                             st.session_state.user = {"id": user[0], "username": user[1], "role": user[2], "university": user[4]}
-                            # Use the university from login input if provided, otherwise from DB
                             final_uni = uni if uni else (user[4] if user[4] else "KL UNIVERSITY")
                             st.session_state.watermark_info = f"{final_uni} - {roll}"
-                            # Instant transition
                             st.rerun()
                         else:
                             st.error("ACCESS DENIED: INVALID QUANTUM IDENTITY.")
+            
+            col_back, col_reg = st.columns(2)
+            with col_back:
+                if st.button("← BACK", use_container_width=True, key="back_to_land_login"):
+                    st.session_state.auth_view = "landing"
+                    st.rerun()
+            with col_reg:
+                if st.button("NEW IDENTITY?", use_container_width=True, key="to_reg_from_login"):
+                    st.session_state.auth_view = "signup"
+                    st.rerun()
 
             st.markdown("---")
             with st.expander("🔑 LOST ACCESS? INITIATE RECOVERY"):
@@ -454,9 +495,9 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                         st.markdown("</div>", unsafe_allow_html=True)
                     else:
                         st.error("IDENTIFIER NOT RECOGNIZED BY THE NETWORK.")
-        
-        with tab2:
-            st.markdown("<h3 style='color: #7f00ff; font-family: Orbitron; margin-bottom: 20px;'>CREATE IDENTITY</h3>", unsafe_allow_html=True)
+
+        elif st.session_state.auth_view == "signup":
+            st.markdown("<h3 style='color: #7f00ff; font-family: Orbitron; margin-bottom: 20px; text-align: center;'>CREATE IDENTITY</h3>", unsafe_allow_html=True)
             with st.form("reg_form"):
                 new_uni_in = st.selectbox("YOUR UNIVERSITY / COLLEGE", COLLEGE_NAMES, key="reg_uni")
                 new_u_in = st.text_input("QUANTUM NAME", key="reg_user")
@@ -495,8 +536,21 @@ By authenticating, you agree to PlaceMentor AI's <a href='https://placementor-ai
                         st.error("ACCESS DENIED: THIS IDENTITY IS RESERVED FOR THE PRIMARY DEVELOPER.")
                     elif register_user(nu, ne, np, new_uni_in, s_quest, sa, "0000000000"):
                         st.success("IDENTITY INITIALIZED. ACCESS GRANTED.")
+                        time.sleep(1)
+                        st.session_state.auth_view = "login"
+                        st.rerun()
                     else:
                         st.error("IDENTITY ALREADY EXISTS.")
+            
+            col_back, col_log = st.columns(2)
+            with col_back:
+                if st.button("← BACK", use_container_width=True, key="back_to_land_reg"):
+                    st.session_state.auth_view = "landing"
+                    st.rerun()
+            with col_log:
+                if st.button("HAVE ACCOUNT?", use_container_width=True, key="to_login_from_reg"):
+                    st.session_state.auth_view = "login"
+                    st.rerun()
         
         st.markdown("</div>", unsafe_allow_html=True)
 
@@ -532,6 +586,7 @@ def sidebar_nav():
         st.session_state.logged_in = False
         st.session_state.user = None
         st.session_state.dev_verified = False
+        st.session_state.auth_view = "landing"
         st.rerun()
 
     # Developer Credits
