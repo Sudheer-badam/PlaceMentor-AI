@@ -5,6 +5,7 @@ import base64
 import random
 import string
 import time
+import datetime
 
 # Use bundled external_libs only on Windows local environments (to handle user's disk space issues)
 # On Streamlit Cloud (Linux), we MUST use the native environment.
@@ -187,6 +188,39 @@ def generate_certificate(name, university, score, date):
     
     return pdf.output()
 
+def auto_sync_notices():
+    """Background task to sync KLU notices once every 24 hours."""
+    try:
+        from datetime import datetime, timedelta
+        # Get latest notices from DB
+        notices = get_notices()
+        
+        should_sync = False
+        if not notices:
+            should_sync = True
+        else:
+            # notices[0][2] is the date string from DB: "YYYY-MM-DD HH:MM:SS"
+            last_date_str = notices[0][2]
+            try:
+                # Handle potential format variations
+                last_date = datetime.strptime(last_date_str, "%Y-%m-%d %H:%M:%S")
+                # Sync if more than 24 hours have passed since the last notice
+                if (datetime.now() - last_date) > timedelta(hours=24):
+                    should_sync = True
+            except:
+                should_sync = True
+        
+        if should_sync:
+            live_data = fetch_klu_live_notices()
+            if live_data:
+                existing_contents = [n[1] for n in notices]
+                for item in live_data:
+                    if item['content'] not in existing_contents:
+                        post_notice(item['content'])
+    except Exception as e:
+        # Fail silently to avoid interrupting the user experience
+        pass
+
 # Initialize Database and Models
 if 'db_initialized' not in st.session_state:
     init_db()
@@ -215,6 +249,11 @@ def main():
         st.session_state.temp_user = None
     if 'auth_view' not in st.session_state:
         st.session_state.auth_view = "landing"
+    
+    # Daily Auto-Sync for KLU Official Updates (Triggered once per session)
+    if 'last_auto_sync' not in st.session_state:
+        auto_sync_notices()
+        st.session_state.last_auto_sync = time.time()
 
     if st.session_state.logged_in:
         # High-Visibility Patriotic Watermark (Solid Tricolor)
