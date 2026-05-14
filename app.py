@@ -213,7 +213,13 @@ def auto_sync_notices():
         if should_sync:
             live_data = fetch_klu_live_notices()
             if live_data:
-                existing_contents = [n[1] for n in notices]
+                # Check against last 20 notices to prevent duplicates more effectively
+                conn = __import__('sqlite3').connect("database/placementor.db")
+                cur = conn.cursor()
+                cur.execute("SELECT content FROM notices ORDER BY date DESC LIMIT 20")
+                existing_contents = [row[0] for row in cur.fetchall()]
+                conn.close()
+                
                 for item in live_data:
                     if item['content'] not in existing_contents:
                         post_notice(item['content'])
@@ -228,7 +234,12 @@ def render_news_ticker():
         return
     
     ticker_items = ""
+    seen_content = set() # Final UI-level deduplication
     for _, content, date_str in notices:
+        if content in seen_content:
+            continue
+        seen_content.add(content)
+        
         # Simple formatting: remove [Live] or [Social] tags and capitalize
         clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
         ticker_items += f"""
