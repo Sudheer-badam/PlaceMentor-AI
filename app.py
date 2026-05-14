@@ -221,6 +221,31 @@ def auto_sync_notices():
         # Fail silently to avoid interrupting the user experience
         pass
 
+def render_news_ticker():
+    """Renders a scrolling news ticker with the latest campus updates."""
+    notices = get_notices()
+    if not notices:
+        return
+    
+    ticker_items = ""
+    for _, content, date_str in notices:
+        # Simple formatting: remove [Live] or [Social] tags and capitalize
+        clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
+        ticker_items += f"""
+            <div class='ticker-item'>
+                <span class='ticker-tag'>NEW</span>
+                <b>{date_str.split(' ')[0]}:</b> {clean_content}
+            </div>
+        """
+    
+    st.markdown(f"""
+        <div class='ticker-wrap'>
+            <div class='ticker'>
+                {ticker_items} {ticker_items} 
+            </div>
+        </div>
+    """, unsafe_allow_html=True)
+
 # Initialize Database and Models
 if 'db_initialized' not in st.session_state:
     init_db()
@@ -254,6 +279,9 @@ def main():
     if 'last_auto_sync' not in st.session_state:
         auto_sync_notices()
         st.session_state.last_auto_sync = time.time()
+    
+    # Global Live News Ticker (Visible to all)
+    render_news_ticker()
 
     if st.session_state.logged_in:
         # High-Visibility Patriotic Watermark (Solid Tricolor)

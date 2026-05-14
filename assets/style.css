@@ -510,3 +510,56 @@ div[data-testid="stNumberInput"] label {
     margin-bottom: 10px;
     display: block;
 }
+
+/* Live News Ticker - Ultra Futuristic */
+.ticker-wrap {
+    width: 100%;
+    overflow: hidden;
+    background: rgba(0, 0, 0, 0.8);
+    backdrop-filter: blur(10px);
+    border-bottom: 2px solid #00f2fe;
+    border-top: 1px solid rgba(0, 242, 254, 0.2);
+    padding: 12px 0;
+    margin-bottom: 20px;
+    border-radius: 0 0 15px 15px;
+}
+
+.ticker {
+    display: inline-block;
+    white-space: nowrap;
+    animation: ticker-animation 40s linear infinite;
+}
+
+.ticker-item {
+    display: inline-block;
+    padding: 0 40px;
+    color: #ffffff;
+    font-family: 'Orbitron', sans-serif;
+    font-size: 0.8em;
+    letter-spacing: 1.5px;
+    border-right: 1px solid rgba(0, 242, 254, 0.3);
+}
+
+.ticker-item b {
+    color: #00f2fe;
+    text-shadow: 0 0 8px rgba(0, 242, 254, 0.5);
+}
+
+.ticker-tag {
+    background: #ff4757;
+    color: white;
+    padding: 2px 8px;
+    border-radius: 4px;
+    font-size: 0.7em;
+    margin-right: 10px;
+    font-weight: 900;
+}
+
+@keyframes ticker-animation {
+    0% { transform: translateX(100%); }
+    100% { transform: translateX(-100%); }
+}
+
+.ticker-wrap:hover .ticker {
+    animation-play-state: paused;
+}
