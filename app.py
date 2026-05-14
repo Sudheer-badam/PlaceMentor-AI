@@ -424,28 +424,31 @@ def auth_page():
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 if submit_login:
-                    u, p, c = u_in.strip(), p_in.strip(), captcha_in.strip()
-                    uni, roll = uni_in.strip(), roll_in.strip()
-                    if not u or not p or not c or not uni or not roll:
-                        st.warning("All fields including University Name, Student ID, and CAPTCHA are required.")
-                    elif not not_robot:
-                        st.error("Human verification failed. Please check the 'I AM HUMAN' box.")
-                    elif c != st.session_state.captcha:
-                        st.error("Verification code mismatch. (Note: Case Sensitive)")
-                        st.session_state.captcha = generate_captcha()
-                        st.rerun()
-                    else:
-                        user = login_user(u, p)
-                        if isinstance(user, dict) and user.get("status") == "blocked":
-                            st.error(f"🛑 ACCESS RESTRICTED: {user['message']}")
-                        elif user:
-                            st.session_state.logged_in = True
-                            st.session_state.user = {"id": user[0], "username": user[1], "role": user[2], "university": user[4]}
-                            final_uni = uni if uni else (user[4] if user[4] else "KL UNIVERSITY")
-                            st.session_state.watermark_info = f"{final_uni} - {roll}"
+                    with st.spinner("🔐 ESTABLISHING SECURE NEURAL LINK..."):
+                        time.sleep(1.5)
+                        u, p, c = u_in.strip(), p_in.strip(), captcha_in.strip()
+                        uni, roll = uni_in.strip(), roll_in.strip()
+                        if not u or not p or not c or not uni or not roll:
+                            st.warning("All fields including University Name, Student ID, and CAPTCHA are required.")
+                        elif not not_robot:
+                            st.error("Human verification failed. Please check the 'I AM HUMAN' box.")
+                        elif c != st.session_state.captcha:
+                            st.error("Verification code mismatch. (Note: Case Sensitive)")
+                            st.session_state.captcha = generate_captcha()
                             st.rerun()
                         else:
-                            st.error("ACCESS DENIED: INVALID QUANTUM IDENTITY.")
+                            user = login_user(u, p)
+                            if isinstance(user, dict) and user.get("status") == "blocked":
+                                st.error(f"🛑 ACCESS RESTRICTED: {user['message']}")
+                            elif user:
+                                st.toast("✅ IDENTITY VERIFIED", icon="🛡️")
+                                st.session_state.logged_in = True
+                                st.session_state.user = {"id": user[0], "username": user[1], "role": user[2], "university": user[4]}
+                                final_uni = uni if uni else (user[4] if user[4] else "KL UNIVERSITY")
+                                st.session_state.watermark_info = f"{final_uni} - {roll}"
+                                st.rerun()
+                            else:
+                                st.error("ACCESS DENIED: INVALID QUANTUM IDENTITY.")
             
             col_back, col_reg = st.columns(2)
             with col_back:
@@ -524,23 +527,26 @@ def auth_page():
                 st.markdown("</div>", unsafe_allow_html=True)
                 
                 if submit_reg:
-                    nu, ne, np, nc = new_u_in.strip(), new_e_in.strip(), new_p_in.strip(), new_c_in.strip()
-                    sa = s_ans_in.strip()
-                    if not terms_agreed:
-                        st.warning("You must agree to the Terms & Conditions to proceed.")
-                    elif not nu or not ne or not np or not sa:
-                        st.warning("All fields are mandatory.")
-                    elif np != nc:
-                        st.error("KEYS DO NOT MATCH")
-                    elif nu.upper() == "BADAM SUDHEER REDDY":
-                        st.error("ACCESS DENIED: THIS IDENTITY IS RESERVED FOR THE PRIMARY DEVELOPER.")
-                    elif register_user(nu, ne, np, new_uni_in, s_quest, sa, "0000000000"):
-                        st.success("IDENTITY INITIALIZED. ACCESS GRANTED.")
-                        time.sleep(1)
-                        st.session_state.auth_view = "login"
-                        st.rerun()
-                    else:
-                        st.error("IDENTITY ALREADY EXISTS.")
+                    with st.spinner("🛡️ INITIALIZING IDENTITY PROTOCOLS..."):
+                        time.sleep(2)
+                        nu, ne, np, nc = new_u_in.strip(), new_e_in.strip(), new_p_in.strip(), new_c_in.strip()
+                        sa = s_ans_in.strip()
+                        if not terms_agreed:
+                            st.warning("You must agree to the Terms & Conditions to proceed.")
+                        elif not nu or not ne or not np or not sa:
+                            st.warning("All fields are mandatory.")
+                        elif np != nc:
+                            st.error("KEYS DO NOT MATCH")
+                        elif nu.upper() == "BADAM SUDHEER REDDY":
+                            st.error("ACCESS DENIED: THIS IDENTITY IS RESERVED FOR THE PRIMARY DEVELOPER.")
+                        elif register_user(nu, ne, np, new_uni_in, s_quest, sa, "0000000000"):
+                            st.toast("🌐 IDENTITY SYNC COMPLETE", icon="✅")
+                            st.success("IDENTITY INITIALIZED. ACCESS GRANTED.")
+                            time.sleep(1)
+                            st.session_state.auth_view = "login"
+                            st.rerun()
+                        else:
+                            st.error("IDENTITY ALREADY EXISTS.")
             
             col_back, col_log = st.columns(2)
             with col_back:
