@@ -291,8 +291,9 @@ def main():
         auto_sync_notices()
         st.session_state.last_auto_sync = time.time()
     
-    # Global Live News Ticker (Visible to all)
-    render_news_ticker()
+    # Global Live News Ticker (Visible only to logged in users)
+    if st.session_state.logged_in:
+        render_news_ticker()
 
     if st.session_state.logged_in:
         # High-Visibility Patriotic Watermark (Solid Tricolor)
