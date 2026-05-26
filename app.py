@@ -43,9 +43,10 @@ COLLEGE_LIST = load_college_data()
 COLLEGE_NAMES = [c["name"] for c in COLLEGE_LIST]
 
 # Page Configuration
+_favicon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "BADAMSUDHEERREDDY.jpg")
 st.set_page_config(
-    page_title="PlaceMentor AI",
-    page_icon="🚀",
+    page_title="BADAM SUDHEER REDDY",
+    page_icon=_favicon_path if os.path.exists(_favicon_path) else "🚀",
     layout="wide",
     initial_sidebar_state="expanded"
 )
@@ -344,16 +345,16 @@ def auth_page():
             base_path = os.path.dirname(os.path.abspath(__file__))
             mentor_data = get_base64_image(os.path.join(base_path, "assets", "ai_mentor.png"))
             dev_data = get_base64_image(os.path.join(base_path, "assets", "dev_photo.png"))
-            logo_data = get_base64_image(os.path.join(base_path, "assets", "kl_logo.png"))
+            profile_photo_data = get_base64_image(os.path.join(base_path, "BADAMSUDHEERREDDY.jpg"))
 
             st.markdown(f"""
 <div style='text-align: center; margin-top: 10px;'>
 <!-- Institution Header -->
 <div class='institution-header'>
-{"<img src='data:image/png;base64," + logo_data + "' style='height: 60px;'>" if logo_data else ""}
+{"<img src='data:image/jpeg;base64," + profile_photo_data + "' style='height: 65px; width: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);'>" if profile_photo_data else ""}
 <div style='text-align: left;'>
-<h4 style='margin: 0; color: #00f2fe; font-family: "Orbitron";'>KL UNIVERSITY</h4>
-<p style='margin: 0; color: white; font-size: 0.8em; letter-spacing: 2px;'>OFFICIAL CAREER EXCELLENCE HUB</p>
+<h4 style='margin: 0; color: #00f2fe; font-family: "Orbitron";'>BADAM SUDHEER REDDY</h4>
+<p style='margin: 0; color: white; font-size: 0.8em; letter-spacing: 2px;'>PLACEMENTOR AI · STREAMLIT</p>
 </div>
 </div>
 
