@@ -11,3 +11,6 @@ python-dotenv
 Pillow
 fpdf2
 google-generativeai
+beautifulsoup4
+requests
+lxml

@@ -242,20 +242,9 @@ def render_news_ticker():
         
         # Simple formatting: remove [Live] or [Social] tags and capitalize
         clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
-        ticker_items += f"""
-            <div class='ticker-item'>
-                <span class='ticker-tag'>NEW</span>
-                <b>{date_str.split(' ')[0]}:</b> {clean_content}
-            </div>
-        """
+        ticker_items += f"<div class='ticker-item'><span class='ticker-tag'>NEW</span><b>{date_str.split(' ')[0]}:</b> {clean_content}</div>"
     
-    st.markdown(f"""
-        <div class='ticker-wrap'>
-            <div class='ticker'>
-                {ticker_items}
-            </div>
-        </div>
-    """, unsafe_allow_html=True)
+    st.markdown(f"<div class='ticker-wrap'><div class='ticker'>{ticker_items}</div></div>", unsafe_allow_html=True)
 
 # Initialize Database and Models
 if 'db_initialized' not in st.session_state:
