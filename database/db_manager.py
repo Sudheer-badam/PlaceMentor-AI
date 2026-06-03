@@ -9,13 +9,38 @@ import os
 # ─────────────────────────────────────────────
 # DUAL MODE: PostgreSQL (cloud) or SQLite (local)
 # ─────────────────────────────────────────────
+_DB_URL = None
+
+# Try reading from Streamlit secrets (cloud deployment)
 try:
     import streamlit as st
-    _DB_URL = st.secrets.get("database", {}).get("url", None)
+    _DB_URL = st.secrets["database"]["url"]
 except Exception:
+    pass
+
+# Fallback: try environment variable (local dev or CI)
+if not _DB_URL:
     _DB_URL = os.environ.get("DATABASE_URL", None)
 
-USE_POSTGRES = _DB_URL is not None
+# Last fallback: try reading from local .streamlit/secrets.toml manually
+if not _DB_URL:
+    try:
+        import tomllib  # Python 3.11+
+    except ImportError:
+        try:
+            import tomli as tomllib
+        except ImportError:
+            tomllib = None
+    if tomllib:
+        _secrets_path = os.path.join(os.path.dirname(os.path.dirname(__file__)), ".streamlit", "secrets.toml")
+        try:
+            with open(_secrets_path, "rb") as _f:
+                _secrets_data = tomllib.load(_f)
+            _DB_URL = _secrets_data.get("database", {}).get("url", None)
+        except Exception:
+            pass
+
+USE_POSTGRES = bool(_DB_URL)
 
 if USE_POSTGRES:
     import psycopg2
@@ -352,6 +377,14 @@ def init_db():
         conn.rollback()
     finally:
         conn.close()
+
+    # ── Startup Diagnostic (visible in Streamlit Cloud logs) ──────
+    if USE_POSTGRES:
+        print(f"✅ Database initialized successfully! Mode: PostgreSQL (Cloud Neon)")
+        print(f"   Host: {_DB_URL.split('@')[1].split('/')[0] if _DB_URL else 'unknown'}")
+    else:
+        print("⚠️  Database initialized in LOCAL SQLite mode — data will be lost on restart!")
+        print("   Fix: Add [database] url = '...' to Streamlit Secrets in share.streamlit.io")
 
 
 # ─────────────────────────────────────────────
