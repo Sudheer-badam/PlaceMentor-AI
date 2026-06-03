@@ -291,9 +291,6 @@ def render_news_ticker():
     # Initialize speed persistently
     if 'ticker_speed' not in st.session_state:
         st.session_state.ticker_speed = get_ticker_speed()
-    else:
-        # Keep synced with file in case another session changed it
-        st.session_state.ticker_speed = get_ticker_speed()
         
     # Inject dynamic speed + size CSS (overrides cached style.css)
     st.markdown(f"""
