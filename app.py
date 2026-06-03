@@ -943,7 +943,7 @@ def show_developer_dashboard():
         stats = get_all_user_stats()
         if stats:
             import pandas as pd
-            df = pd.DataFrame(stats, columns=["Username", "Email", "College", "Student ID", "Last Login", "Coding Problems", "Avg Quiz Score", "Skills Count"])
+            df = pd.DataFrame(stats, columns=["User ID", "Username", "Email", "College", "Last Login", "Coding Problems", "Avg Quiz Score", "Skills Count"])
             st.dataframe(df, use_container_width=True)
         else:
             st.info("No user data available.")
@@ -1816,7 +1816,7 @@ def show_settings():
         with st.expander("📊 All User Statistics & Performance"):
             user_data = get_all_user_stats()
             if user_data:
-                df = pd.DataFrame(user_data, columns=["Username", "Email", "Last Active", "Problems", "Avg Quiz", "Skills"])
+                df = pd.DataFrame(user_data, columns=["User ID", "Username", "Email", "College", "Last Active", "Problems", "Avg Quiz", "Skills"])
                 # Calculate a mock readiness for the admin table
                 df["Readiness %"] = (df["Skills"] * 8) + (df["Problems"] * 2)
                 df["Readiness %"] = df["Readiness %"].apply(lambda x: min(100, x))

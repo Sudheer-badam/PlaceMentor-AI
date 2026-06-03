@@ -650,7 +650,7 @@ def get_all_user_stats():
     cursor = conn.cursor()
     cursor.execute("""
         SELECT 
-            u.username, u.email, u.university, u.phone_number, u.last_login,
+            u.id, u.username, u.email, u.university, u.last_login,
             (SELECT COUNT(*) FROM coding_tracker WHERE user_id = u.id) as problems,
             (SELECT AVG(score) FROM quiz_scores WHERE user_id = u.id) as avg_quiz,
             (SELECT COUNT(*) FROM skills WHERE user_id = u.id) as skill_count
