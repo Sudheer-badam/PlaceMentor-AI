@@ -226,40 +226,15 @@ def auto_sync_notices():
         pass
 
 def get_ticker_speed():
-    # 1. Try reading from URL query params
-    url_speed = None
-    if "speed" in st.query_params:
-        try:
-            url_speed = int(st.query_params["speed"])
-        except:
-            pass
-
-    # 2. Try reading from settings.json
-    file_speed = 40
     settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "settings.json")
     try:
         if os.path.exists(settings_path):
             with open(settings_path, "r") as f:
                 data = json.load(f)
-                file_speed = data.get("ticker_speed", 40)
+                return data.get("ticker_speed", 40)
     except:
         pass
-
-    # 3. Synchronize
-    if url_speed is not None:
-        if url_speed != file_speed:
-            # URL changed, save it to file
-            try:
-                os.makedirs(os.path.dirname(settings_path), exist_ok=True)
-                with open(settings_path, "w") as f:
-                    json.dump({"ticker_speed": url_speed}, f)
-            except:
-                pass
-        return url_speed
-    else:
-        # No URL param, set query parameter to match file
-        st.query_params["speed"] = str(file_speed)
-        return file_speed
+    return 40
 
 def save_ticker_speed(speed):
     settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "settings.json")
@@ -269,7 +244,6 @@ def save_ticker_speed(speed):
             json.dump({"ticker_speed": speed}, f)
     except:
         pass
-    st.query_params["speed"] = str(speed)
 
 def render_news_ticker():
     """Renders a scrolling news ticker with the latest campus updates."""
@@ -288,9 +262,9 @@ def render_news_ticker():
         clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
         ticker_items += f"<div class='ticker-item'><span class='ticker-tag'>NEW</span><b>{date_str.split(' ')[0]}:</b> {clean_content}</div>"
     
-    # Initialize speed persistently
-    if 'ticker_speed' not in st.session_state:
-        st.session_state.ticker_speed = get_ticker_speed()
+    # Read the latest speed from database/settings.json on every render 
+    # to instantly follow developer/admin updates in all active user sessions.
+    st.session_state.ticker_speed = get_ticker_speed()
         
     # Inject dynamic speed + size CSS (overrides cached style.css)
     st.markdown(f"""
