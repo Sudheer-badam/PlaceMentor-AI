@@ -260,7 +260,7 @@ def render_news_ticker():
         
         # Simple formatting: remove [Live] or [Social] tags and capitalize
         clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
-        ticker_items += f"<div class='ticker-item'><span class='ticker-tag'>NEW</span><b>{date_str.split(' ')[0]}:</b> {clean_content}</div>"
+        ticker_items += f"<div class='ticker-item'><span class='ticker-tag'>NEW</span><b>{str(date_str).split(' ')[0]}:</b> {clean_content}</div>"
     
     # Read the latest speed from database/settings.json on every render 
     # to instantly follow developer/admin updates in all active user sessions.
