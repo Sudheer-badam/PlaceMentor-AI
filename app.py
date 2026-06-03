@@ -7,12 +7,8 @@ import string
 import time
 import datetime
 
-# Use bundled external_libs only on Windows local environments (to handle user's disk space issues)
-# On Streamlit Cloud (Linux), we MUST use the native environment.
-if os.name == 'nt':
-    _ext_libs = os.path.join(os.path.dirname(os.path.abspath(__file__)), "win_libs_do_not_push")
-    if _ext_libs not in sys.path:
-        sys.path.insert(0, _ext_libs)
+# All packages are installed in the venv - win_libs_do_not_push is not used
+# to avoid conflicting numpy/package versions causing ImportError.
 from database.db_manager import (
     init_db, register_user, login_user, save_quiz_score, 
     get_user_scores, save_skill, get_user_skills, 
@@ -43,9 +39,10 @@ COLLEGE_LIST = load_college_data()
 COLLEGE_NAMES = [c["name"] for c in COLLEGE_LIST]
 
 # Page Configuration
-_favicon_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "BADAMSUDHEERREDDY.jpg")
+_logo_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "assets", "logo.png")
+_favicon_path = _logo_path if os.path.exists(_logo_path) else os.path.join(os.path.dirname(os.path.abspath(__file__)), "BADAMSUDHEERREDDY.jpg")
 st.set_page_config(
-    page_title="BADAM SUDHEER REDDY",
+    page_title="PlaceMentor AI",
     page_icon=_favicon_path if os.path.exists(_favicon_path) else "🚀",
     layout="wide",
     initial_sidebar_state="expanded"
@@ -228,6 +225,52 @@ def auto_sync_notices():
         # Fail silently to avoid interrupting the user experience
         pass
 
+def get_ticker_speed():
+    # 1. Try reading from URL query params
+    url_speed = None
+    if "speed" in st.query_params:
+        try:
+            url_speed = int(st.query_params["speed"])
+        except:
+            pass
+
+    # 2. Try reading from settings.json
+    file_speed = 40
+    settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "settings.json")
+    try:
+        if os.path.exists(settings_path):
+            with open(settings_path, "r") as f:
+                data = json.load(f)
+                file_speed = data.get("ticker_speed", 40)
+    except:
+        pass
+
+    # 3. Synchronize
+    if url_speed is not None:
+        if url_speed != file_speed:
+            # URL changed, save it to file
+            try:
+                os.makedirs(os.path.dirname(settings_path), exist_ok=True)
+                with open(settings_path, "w") as f:
+                    json.dump({"ticker_speed": url_speed}, f)
+            except:
+                pass
+        return url_speed
+    else:
+        # No URL param, set query parameter to match file
+        st.query_params["speed"] = str(file_speed)
+        return file_speed
+
+def save_ticker_speed(speed):
+    settings_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), "database", "settings.json")
+    try:
+        os.makedirs(os.path.dirname(settings_path), exist_ok=True)
+        with open(settings_path, "w") as f:
+            json.dump({"ticker_speed": speed}, f)
+    except:
+        pass
+    st.query_params["speed"] = str(speed)
+
 def render_news_ticker():
     """Renders a scrolling news ticker with the latest campus updates."""
     notices = get_notices()
@@ -245,7 +288,64 @@ def render_news_ticker():
         clean_content = content.replace("[Live]", "").replace("[Social]", "").strip().upper()
         ticker_items += f"<div class='ticker-item'><span class='ticker-tag'>NEW</span><b>{date_str.split(' ')[0]}:</b> {clean_content}</div>"
     
+    # Initialize speed persistently
+    if 'ticker_speed' not in st.session_state:
+        st.session_state.ticker_speed = get_ticker_speed()
+    else:
+        # Keep synced with file in case another session changed it
+        st.session_state.ticker_speed = get_ticker_speed()
+        
+    # Inject dynamic speed + size CSS (overrides cached style.css)
+    st.markdown(f"""
+    <style>
+    .ticker {{
+        animation: ticker-animation {st.session_state.ticker_speed}s linear infinite !important;
+    }}
+    .ticker-item {{
+        font-family: 'Times New Roman', Times, serif !important;
+        font-size: 1.5em !important;
+        font-weight: 700 !important;
+        letter-spacing: 2px !important;
+        padding: 0 50px !important;
+        text-shadow: 0 0 6px rgba(255,255,255,0.3) !important;
+    }}
+    .ticker-wrap {{
+        padding: 18px 0 !important;
+        border-bottom: 3px solid #00f2fe !important;
+        border-top: 2px solid rgba(0,242,254,0.4) !important;
+    }}
+    </style>
+    """, unsafe_allow_html=True)
+    
     st.markdown(f"<div class='ticker-wrap'><div class='ticker'>{ticker_items}</div></div>", unsafe_allow_html=True)
+    
+    # Render Slower / Faster buttons only for Developer or Admin
+    show_controls = False
+    if st.session_state.get('logged_in', False) and 'user' in st.session_state:
+        username = st.session_state.user.get('username', '').upper()
+        role = st.session_state.user.get('role', '').upper()
+        is_developer = (username == 'BADAM SUDHEER REDDY')
+        is_admin = (role == 'ADMIN')
+        if is_developer or is_admin:
+            show_controls = True
+            
+    if show_controls:
+        suffix = "logged_in"
+        col_s1, col_s2, col_s3 = st.columns([1.2, 1.5, 1.2])
+        with col_s1:
+            if st.button("🐢 SLOWER", key=f"slower_btn_{suffix}", use_container_width=True):
+                st.session_state.ticker_speed = min(400, st.session_state.ticker_speed + 40)
+                save_ticker_speed(st.session_state.ticker_speed)
+                st.rerun()
+        with col_s2:
+            speed_factor = round(40.0 / st.session_state.ticker_speed, 2)
+            st.markdown(f"<div style='text-align: center; color: #00f2fe; font-family: \"Orbitron\", sans-serif; font-size: 0.85em; margin-top: 8px; font-weight: bold;'>⚡ {speed_factor}x SPEED</div>", unsafe_allow_html=True)
+        with col_s3:
+            if st.button("⚡ FASTER", key=f"faster_btn_{suffix}", use_container_width=True):
+                st.session_state.ticker_speed = max(10, st.session_state.ticker_speed - 40)
+                save_ticker_speed(st.session_state.ticker_speed)
+                st.rerun()
+
 
 # Initialize Database and Models
 if 'db_initialized' not in st.session_state:
@@ -346,12 +446,13 @@ def auth_page():
             mentor_data = get_base64_image(os.path.join(base_path, "assets", "ai_mentor.png"))
             dev_data = get_base64_image(os.path.join(base_path, "assets", "dev_photo.png"))
             profile_photo_data = get_base64_image(os.path.join(base_path, "BADAMSUDHEERREDDY.jpg"))
+            logo_data = get_base64_image(os.path.join(base_path, "assets", "logo.png"))
 
             st.markdown(f"""
 <div style='text-align: center; margin-top: 10px;'>
 <!-- Institution Header -->
 <div class='institution-header'>
-{"<img src='data:image/jpeg;base64," + profile_photo_data + "' style='height: 65px; width: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);'>" if profile_photo_data else ""}
+{"<img src='data:image/png;base64," + logo_data + "' style='height: 65px; width: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #00f2fe; box-shadow: 0 0 15px rgba(0,242,254,0.5);'>" if logo_data else ("<img src='data:image/jpeg;base64," + profile_photo_data + "' style='height: 65px; width: 65px; border-radius: 50%; object-fit: cover; border: 2px solid #00f2fe; box-shadow: 0 0 15px rgba(0, 242, 254, 0.4);'>" if profile_photo_data else "")}
 <div style='text-align: left;'>
 <h4 style='margin: 0; color: #00f2fe; font-family: "Orbitron";'>BADAM SUDHEER REDDY</h4>
 <p style='margin: 0; color: white; font-size: 0.8em; letter-spacing: 2px;'>PLACEMENTOR AI · STREAMLIT</p>
@@ -627,6 +728,9 @@ def auth_page():
         
         st.markdown("</div>", unsafe_allow_html=True)
 
+        # Official Notice Ticker — below the login glass card
+        render_news_ticker()
+
     # Global Stats Footer
     st.markdown("<div style='margin-top: 50px;'>", unsafe_allow_html=True)
     try:
@@ -666,8 +770,20 @@ def sidebar_nav():
     st.sidebar.markdown("---")
     try:
         base_path = os.path.dirname(os.path.abspath(__file__))
+        logo_path = os.path.join(base_path, "assets", "logo.png")
         dev_path = os.path.join(base_path, "assets", "dev_photo.png")
-        if os.path.exists(dev_path):
+        if os.path.exists(logo_path):
+            with open(logo_path, "rb") as f:
+                logo_b64 = base64.b64encode(f.read()).decode("utf-8")
+            st.sidebar.markdown(
+                f"""
+<div style="text-align: center; margin-bottom: 10px;">
+<img src="data:image/png;base64,{logo_b64}" style="width: 140px; height: 140px; border-radius: 50%; object-fit: cover; border: 3px solid #00f2fe; box-shadow: 0 0 20px rgba(0,242,254,0.5); margin-bottom: 8px;">
+</div>
+""",
+                unsafe_allow_html=True
+            )
+        elif os.path.exists(dev_path):
             with open(dev_path, "rb") as f:
                 data = base64.b64encode(f.read()).decode("utf-8")
             st.sidebar.markdown(
@@ -681,7 +797,7 @@ def sidebar_nav():
         else:
             st.sidebar.markdown("👤")
     except Exception as e:
-        st.sidebar.markdown("👤") 
+        st.sidebar.markdown("👤")
 
     st.sidebar.markdown("""
 <div style='text-align: center;'>
@@ -930,7 +1046,16 @@ def show_developer_dashboard():
         logs = get_security_logs()
         if logs:
             import pandas as pd
-            df_logs = pd.DataFrame(logs, columns=["Username", "Event", "Timestamp"])
+            from datetime import datetime
+            def fmt_ts(ts):
+                try:
+                    return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").strftime("%d %b %Y, %I:%M:%S %p IST")
+                except:
+                    return ts
+            df_logs = pd.DataFrame([
+                {"Username": r[0], "Event": r[1], "Timestamp (IST)": fmt_ts(r[2])}
+                for r in logs
+            ])
             st.dataframe(df_logs, use_container_width=True)
         else:
             st.info("No security logs detected.")
@@ -1675,10 +1800,15 @@ def show_settings():
         st.write("Review recent login attempts to keep your account safe.")
         logs = get_security_logs(st.session_state.user['id'])
         if logs:
+            from datetime import datetime
+            def fmt_ts(ts):
+                try:
+                    return datetime.strptime(ts, "%Y-%m-%d %H:%M:%S").strftime("%d %b %Y, %I:%M:%S %p IST")
+                except:
+                    return ts
             for ip, status, date in logs:
                 icon = "✅" if status == "Success" else "⚠️"
-                color = "green" if status == "Success" else "red"
-                st.markdown(f"**{icon} {status}** from IP: `{ip}` at *{date}*")
+                st.markdown(f"**{icon} {status}** from IP: `{ip}` at *{fmt_ts(date)}*")
         else:
             st.write("No activity logs available.")
         
