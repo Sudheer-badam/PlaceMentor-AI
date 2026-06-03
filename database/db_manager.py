@@ -126,9 +126,15 @@ def init_db():
         CREATE TABLE IF NOT EXISTS notices (
             id INTEGER PRIMARY KEY AUTOINCREMENT,
             content TEXT,
-            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP
+            date TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+            status TEXT DEFAULT 'active'
         )
     ''')
+    try:
+        cursor.execute("ALTER TABLE notices ADD COLUMN status TEXT DEFAULT 'active'")
+        conn.commit()
+    except:
+        pass
 
     # Support Tickets Table (Feedback to Dev)
     cursor.execute('''
@@ -378,7 +384,10 @@ def post_notice(content):
 def get_notices():
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("SELECT id, content, date FROM notices ORDER BY date DESC LIMIT 5")
+    try:
+        cursor.execute("SELECT id, content, date FROM notices WHERE status IS NULL OR status = 'active' ORDER BY date DESC LIMIT 5")
+    except sqlite3.OperationalError:
+        cursor.execute("SELECT id, content, date FROM notices ORDER BY date DESC LIMIT 5")
     res = cursor.fetchall()
     conn.close()
     return res
@@ -386,7 +395,10 @@ def get_notices():
 def delete_notice(notice_id):
     conn = sqlite3.connect(DB_PATH)
     cursor = conn.cursor()
-    cursor.execute("DELETE FROM notices WHERE id = ?", (notice_id,))
+    try:
+        cursor.execute("UPDATE notices SET status = 'deleted' WHERE id = ?", (notice_id,))
+    except sqlite3.OperationalError:
+        cursor.execute("DELETE FROM notices WHERE id = ?", (notice_id,))
     conn.commit()
     conn.close()
 
