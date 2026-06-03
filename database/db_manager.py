@@ -170,6 +170,43 @@ def init_db():
                 date TIMESTAMP DEFAULT NOW()
             )
         """)
+
+        # Dynamically migrate existing Neon PostgreSQL tables if they already exist
+        try:
+            cursor.execute("""
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'users'
+            """)
+            existing_cols = {row[0] for row in cursor.fetchall()}
+            cols_to_add = {
+                "last_login": "TIMESTAMP",
+                "security_question": "TEXT",
+                "security_answer": "TEXT",
+                "phone_number": "TEXT",
+                "university": "TEXT",
+                "status": "TEXT DEFAULT 'active'",
+                "block_message": "TEXT"
+            }
+            for col, col_type in cols_to_add.items():
+                if col not in existing_cols:
+                    cursor.execute(f"ALTER TABLE users ADD COLUMN {col} {col_type}")
+                    conn.commit()
+        except Exception:
+            conn.rollback()
+
+        try:
+            cursor.execute("""
+                SELECT column_name 
+                FROM information_schema.columns 
+                WHERE table_name = 'notices'
+            """)
+            existing_cols = {row[0] for row in cursor.fetchall()}
+            if "status" not in existing_cols:
+                cursor.execute("ALTER TABLE notices ADD COLUMN status TEXT DEFAULT 'active'")
+                conn.commit()
+        except Exception:
+            conn.rollback()
     else:
         # SQLite schema (local fallback)
         cursor.execute("""
