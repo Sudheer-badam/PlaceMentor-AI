@@ -15,7 +15,7 @@ from database.db_manager import (
     save_coding_progress, get_coding_stats, get_community_stats,
     get_security_question, reset_password, post_notice, get_notices,
     delete_notice, send_feedback, get_all_feedback, get_all_user_stats,
-    get_security_logs, delete_user, update_user_status
+    get_security_logs, delete_user, update_user_status, _get_conn
 )
 from utils.ml_model import train_model
 from utils.platform_sync import sync_leetcode_stats, sync_harkerrank_stats
@@ -26,6 +26,7 @@ from fpdf import FPDF
 import io
 import urllib.parse
 import json
+from streamlit_autorefresh import st_autorefresh
 
 # Load College Data
 def load_college_data():
@@ -211,8 +212,7 @@ def auto_sync_notices():
         if should_sync:
             live_data = fetch_klu_live_notices()
             if live_data:
-                # Check against last 20 notices to prevent duplicates more effectively
-                conn = __import__('sqlite3').connect("database/placementor.db")
+                conn = _get_conn()
                 cur = conn.cursor()
                 cur.execute("SELECT content FROM notices ORDER BY date DESC LIMIT 20")
                 existing_contents = [row[0] for row in cur.fetchall()]
@@ -352,8 +352,9 @@ def main():
         auto_sync_notices()
         st.session_state.last_auto_sync = time.time()
     
-    # Global Live News Ticker (Visible only to logged in users)
     if st.session_state.logged_in:
+        # Autorefresh page every 30 seconds smoothly in the background
+        st_autorefresh(interval=30000, key="placementor_live_updater")
         render_news_ticker()
 
     if st.session_state.logged_in:
