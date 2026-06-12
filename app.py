@@ -10,7 +10,7 @@ import datetime
 # Inject Google Search Console verification tag into Streamlit's index.html at startup
 def inject_google_verification():
     import shutil
-    verification_tag = '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />'
+    verification_tag = '<meta name="google-site-verification" content="WJzuUiGh63bEdq2A7mfTWJgoEbSb65i1N0LgV-rUKLE" />'
     
     try:
         streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
