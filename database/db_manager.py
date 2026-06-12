@@ -380,10 +380,10 @@ def init_db():
 
     # ── Startup Diagnostic (visible in Streamlit Cloud logs) ──────
     if USE_POSTGRES:
-        print(f"✅ Database initialized successfully! Mode: PostgreSQL (Cloud Neon)")
+        print("[OK] Database initialized successfully! Mode: PostgreSQL (Cloud Neon)")
         print(f"   Host: {_DB_URL.split('@')[1].split('/')[0] if _DB_URL else 'unknown'}")
     else:
-        print("⚠️  Database initialized in LOCAL SQLite mode — data will be lost on restart!")
+        print("[LOCAL] Database initialized in SQLite mode (local dev) — data resets on restart.")
         print("   Fix: Add [database] url = '...' to Streamlit Secrets in share.streamlit.io")
 
 

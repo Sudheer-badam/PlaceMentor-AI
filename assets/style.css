@@ -1,5 +1,37 @@
 /* PlaceMentor AI - Ultra Vibrant & Multi-Colour Theme */
 
+/* ===== HIDE STREAMLIT DEFAULT UI ELEMENTS ===== */
+
+/* Hide the top-right toolbar (Deploy button, hamburger menu, star icon) */
+[data-testid="stToolbar"],
+[data-testid="stToolbarActions"],
+header[data-testid="stHeader"],
+#MainMenu,
+.stDeployButton,
+[data-testid="stDeployButton"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Hide "Made with Streamlit" footer */
+footer,
+footer a,
+[data-testid="stStatusWidget"] {
+    display: none !important;
+    visibility: hidden !important;
+}
+
+/* Remove top padding that was reserved for the hidden header */
+.stApp > header {
+    display: none !important;
+}
+
+section.main > div:first-child {
+    padding-top: 1rem !important;
+}
+/* =============================================== */
+
+
 /* Global Background with animated mesh gradient */
 /* Global Background - Futuristic & Immersive */
 .stApp {
