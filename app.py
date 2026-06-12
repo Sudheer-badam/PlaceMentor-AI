@@ -109,6 +109,11 @@ def get_css_content(css_path):
     return ""
 
 def load_css():
+    # Inject Google Search Console verification meta tag (HTML tag method)
+    st.markdown(
+        '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />',
+        unsafe_allow_html=True
+    )
     st.markdown("""
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
