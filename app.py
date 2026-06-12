@@ -33,6 +33,40 @@ def inject_google_verification():
                 dst_file = os.path.join(streamlit_static_path, filename)
                 if os.path.isfile(src_file):
                     shutil.copy2(src_file, dst_file)
+                    
+        # 3. Patch the running Tornado application router to serve Google verification files at the root
+        try:
+            import gc
+            from tornado.web import Application, RequestHandler
+            from tornado.routing import Rule, PathMatches
+
+            class GoogleVerificationHandler(RequestHandler):
+                def get(self, filename):
+                    import os
+                    base_path = os.path.dirname(os.path.abspath(__file__))
+                    file_path = os.path.join(base_path, 'assets', 'public', filename)
+                    if os.path.exists(file_path):
+                        self.set_header("Content-Type", "text/html; charset=utf-8")
+                        with open(file_path, "r", encoding="utf-8") as f:
+                            self.write(f.read())
+                    else:
+                        self.set_status(404)
+                        self.write("File not found")
+
+            # Locate the Tornado Application instance from garbage collector referrers
+            apps = [o for o in gc.get_referrers(Application) if isinstance(o, Application)]
+            for app in apps:
+                # Check if this rule is already injected to avoid duplicates
+                already_injected = False
+                for r in app.wildcard_router.rules:
+                    if hasattr(r, 'target') and r.target == GoogleVerificationHandler:
+                        already_injected = True
+                        break
+                if not already_injected:
+                    rule = Rule(PathMatches(r"/(google[a-zA-Z0-9]+\.html)"), GoogleVerificationHandler)
+                    app.wildcard_router.rules.insert(0, rule)
+        except:
+            pass
     except:
         pass
 
