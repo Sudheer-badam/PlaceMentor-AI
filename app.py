@@ -9,7 +9,7 @@ import datetime
 
 st.markdown(
     """
-    <meta name="google-site-verification" content="bjox0trDiLQj2-Duva2NfFCsVcwYKvBV5TEl57no9mM" />
+    <meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />
     """,
     unsafe_allow_html=True
 )
