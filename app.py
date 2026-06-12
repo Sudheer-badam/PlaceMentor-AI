@@ -7,9 +7,12 @@ import string
 import time
 import datetime
 
-st.markdown("""
-<meta name="google-site-verification" content="bjox0trDiLQj2-Duva2NfFCsVcwYKvBV5TEl57no9mM" />
-""", unsafe_allow_html=True)
+st.markdown(
+    """
+    <meta name="google-site-verification" content="bjox0trDiLQj2-Duva2NfFCsVcwYKvBV5TEl57no9mM" />
+    """,
+    unsafe_allow_html=True
+)
 # All packages are installed in the venv - win_libs_do_not_push is not used
 # to avoid conflicting numpy/package versions causing ImportError.
 from database.db_manager import (
