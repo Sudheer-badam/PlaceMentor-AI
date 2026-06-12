@@ -7,12 +7,24 @@ import string
 import time
 import datetime
 
-st.markdown(
-    """
-    <meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />
-    """,
-    unsafe_allow_html=True
-)
+# Dynamically inject Google Search Console verification tag to streamlit index.html
+def inject_google_verification():
+    try:
+        streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
+        index_path = os.path.join(streamlit_static_path, 'index.html')
+        if os.path.exists(index_path):
+            with open(index_path, 'r', encoding='utf-8') as f:
+                content = f.read()
+            verification_tag = '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />'
+            if verification_tag not in content:
+                if '<head>' in content:
+                    new_content = content.replace('<head>', f'<head>\n    {verification_tag}')
+                    with open(index_path, 'w', encoding='utf-8') as f:
+                        f.write(new_content)
+    except:
+        pass
+
+inject_google_verification()
 # All packages are installed in the venv - win_libs_do_not_push is not used
 # to avoid conflicting numpy/package versions causing ImportError.
 from database.db_manager import (
