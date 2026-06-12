@@ -7,70 +7,44 @@ import string
 import time
 import datetime
 
-# Dynamically inject Google Search Console verification tag to streamlit index.html and serve public files
+# Inject Google Search Console verification: patch index.html meta tag + copy files to streamlit static
 def inject_google_verification():
     try:
+        import shutil
         streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
         
-        # 1. Inject HTML tag
+        # 1. Inject meta verification tag into Streamlit's index.html
         index_path = os.path.join(streamlit_static_path, 'index.html')
         if os.path.exists(index_path):
             with open(index_path, 'r', encoding='utf-8') as f:
                 content = f.read()
             verification_tag = '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />'
             if verification_tag not in content:
-                if '<head>' in content:
-                    new_content = content.replace('<head>', f'<head>\n    {verification_tag}')
+                head_tag = '<head>' if '<head>' in content else None
+                if head_tag:
+                    new_content = content.replace(head_tag, f'{head_tag}\n    {verification_tag}')
                     with open(index_path, 'w', encoding='utf-8') as f:
                         f.write(new_content)
         
-        # 2. Copy static files (e.g. google verification files) to streamlit static path
-        public_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'public')
-        if os.path.exists(public_dir):
-            import shutil
-            for filename in os.listdir(public_dir):
-                src_file = os.path.join(public_dir, filename)
-                dst_file = os.path.join(streamlit_static_path, filename)
-                if os.path.isfile(src_file):
-                    shutil.copy2(src_file, dst_file)
-                    
-        # 3. Patch the running Tornado application router to serve Google verification files at the root
-        try:
-            import gc
-            from tornado.web import Application, RequestHandler
-            from tornado.routing import Rule, PathMatches
-
-            class GoogleVerificationHandler(RequestHandler):
-                def get(self, filename):
-                    import os
-                    base_path = os.path.dirname(os.path.abspath(__file__))
-                    file_path = os.path.join(base_path, 'assets', 'public', filename)
-                    if os.path.exists(file_path):
-                        self.set_header("Content-Type", "text/html; charset=utf-8")
-                        with open(file_path, "r", encoding="utf-8") as f:
-                            self.write(f.read())
-                    else:
-                        self.set_status(404)
-                        self.write("File not found")
-
-            # Locate the Tornado Application instance from garbage collector referrers
-            apps = [o for o in gc.get_referrers(Application) if isinstance(o, Application)]
-            for app in apps:
-                # Check if this rule is already injected to avoid duplicates
-                already_injected = False
-                for r in app.wildcard_router.rules:
-                    if hasattr(r, 'target') and r.target == GoogleVerificationHandler:
-                        already_injected = True
-                        break
-                if not already_injected:
-                    rule = Rule(PathMatches(r"/(google[a-zA-Z0-9]+\.html)"), GoogleVerificationHandler)
-                    app.wildcard_router.rules.insert(0, rule)
-        except:
-            pass
-    except:
+        # 2. Copy google*.html files from assets/public/ AND static/ into streamlit's static dir
+        # This makes them accessible at the streamlit static URL path
+        base_path = os.path.dirname(os.path.abspath(__file__))
+        for src_dir in [
+            os.path.join(base_path, 'assets', 'public'),
+            os.path.join(base_path, 'static'),
+        ]:
+            if os.path.exists(src_dir):
+                for filename in os.listdir(src_dir):
+                    if filename.startswith('google') and filename.endswith('.html'):
+                        src_file = os.path.join(src_dir, filename)
+                        dst_file = os.path.join(streamlit_static_path, filename)
+                        if os.path.isfile(src_file):
+                            shutil.copy2(src_file, dst_file)
+    except Exception:
         pass
 
 inject_google_verification()
+
 # All packages are installed in the venv - win_libs_do_not_push is not used
 # to avoid conflicting numpy/package versions causing ImportError.
 from database.db_manager import (
