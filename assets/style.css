@@ -549,8 +549,8 @@ div[data-testid="stNumberInput"] label {
     overflow: hidden;
     background: rgba(0, 0, 0, 0.85);
     backdrop-filter: blur(10px);
-    border-bottom: 3px solid #00f2fe;
     border-top: 2px solid rgba(0, 242, 254, 0.4);
+    border-bottom: 3px solid #00f2fe;
     padding: 18px 0;
     margin-bottom: 20px;
     border-radius: 0 0 15px 15px;
