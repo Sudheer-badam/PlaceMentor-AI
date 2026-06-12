@@ -11,8 +11,3 @@ python-dotenv
 Pillow
 fpdf2
 google-generativeai
-beautifulsoup4
-requests
-lxml
-psycopg2-binary
-streamlit-autorefresh

@@ -7,10 +7,12 @@ import string
 import time
 import datetime
 
-# Dynamically inject Google Search Console verification tag to streamlit index.html
+# Dynamically inject Google Search Console verification tag to streamlit index.html and serve public files
 def inject_google_verification():
     try:
         streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
+        
+        # 1. Inject HTML tag
         index_path = os.path.join(streamlit_static_path, 'index.html')
         if os.path.exists(index_path):
             with open(index_path, 'r', encoding='utf-8') as f:
@@ -21,6 +23,16 @@ def inject_google_verification():
                     new_content = content.replace('<head>', f'<head>\n    {verification_tag}')
                     with open(index_path, 'w', encoding='utf-8') as f:
                         f.write(new_content)
+        
+        # 2. Copy static files (e.g. google verification files) to streamlit static path
+        public_dir = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'assets', 'public')
+        if os.path.exists(public_dir):
+            import shutil
+            for filename in os.listdir(public_dir):
+                src_file = os.path.join(public_dir, filename)
+                dst_file = os.path.join(streamlit_static_path, filename)
+                if os.path.isfile(src_file):
+                    shutil.copy2(src_file, dst_file)
     except:
         pass
 
