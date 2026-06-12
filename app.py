@@ -7,27 +7,46 @@ import string
 import time
 import datetime
 
-# Inject Google Search Console verification: patch index.html meta tag + copy files to streamlit static
+# Inject Google Search Console verification tag into Streamlit's index.html at startup
 def inject_google_verification():
+    import shutil
+    verification_tag = '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />'
+    
     try:
-        import shutil
         streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
-        
-        # 1. Inject meta verification tag into Streamlit's index.html
         index_path = os.path.join(streamlit_static_path, 'index.html')
-        if os.path.exists(index_path):
+        
+        if not os.path.exists(index_path):
+            print(f"[GSC] index.html not found at: {index_path}")
+        else:
             with open(index_path, 'r', encoding='utf-8') as f:
                 content = f.read()
-            verification_tag = '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />'
-            if verification_tag not in content:
-                head_tag = '<head>' if '<head>' in content else None
-                if head_tag:
-                    new_content = content.replace(head_tag, f'{head_tag}\n    {verification_tag}')
+            
+            if verification_tag in content:
+                print("[GSC] Verification tag already present in index.html")
+            else:
+                # Try to inject after <head> or <head ...>
+                import re
+                new_content = re.sub(
+                    r'(<head[^>]*>)',
+                    r'\1\n    ' + verification_tag,
+                    content,
+                    count=1
+                )
+                if new_content != content:
                     with open(index_path, 'w', encoding='utf-8') as f:
                         f.write(new_content)
-        
-        # 2. Copy google*.html files from assets/public/ AND static/ into streamlit's static dir
-        # This makes them accessible at the streamlit static URL path
+                    print("[GSC] SUCCESS: Verification tag injected into index.html")
+                else:
+                    print("[GSC] WARNING: Could not find <head> tag in index.html")
+    except PermissionError:
+        print("[GSC] ERROR: Permission denied writing to index.html (read-only on this host)")
+    except Exception as e:
+        print(f"[GSC] ERROR: {e}")
+    
+    # Copy google*.html verification files to streamlit's static dir
+    try:
+        streamlit_static_path = os.path.join(os.path.dirname(st.__file__), 'static')
         base_path = os.path.dirname(os.path.abspath(__file__))
         for src_dir in [
             os.path.join(base_path, 'assets', 'public'),
@@ -40,10 +59,11 @@ def inject_google_verification():
                         dst_file = os.path.join(streamlit_static_path, filename)
                         if os.path.isfile(src_file):
                             shutil.copy2(src_file, dst_file)
-    except Exception:
-        pass
+    except Exception as e:
+        print(f"[GSC] Static copy error: {e}")
 
 inject_google_verification()
+
 
 # All packages are installed in the venv - win_libs_do_not_push is not used
 # to avoid conflicting numpy/package versions causing ImportError.
@@ -109,11 +129,7 @@ def get_css_content(css_path):
     return ""
 
 def load_css():
-    # Inject Google Search Console verification meta tag (HTML tag method)
-    st.markdown(
-        '<meta name="google-site-verification" content="8e-WeXN2yAkUF3O_NGegeGwANltwjBtxfx-d5VaiKtM" />',
-        unsafe_allow_html=True
-    )
+    import streamlit.components.v1 as components
     st.markdown("""
         <link rel="preconnect" href="https://fonts.googleapis.com">
         <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
