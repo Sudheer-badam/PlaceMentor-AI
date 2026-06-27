@@ -12,3 +12,6 @@ Pillow
 fpdf2
 google-generativeai
 psycopg2-binary
+beautifulsoup4
+requests
+streamlit-autorefresh
